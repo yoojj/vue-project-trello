@@ -5,13 +5,17 @@ const mt = require('moment-timezone');
 
 
 const koreaDate = mt().tz('Asia/Seoul');
-const koreaTime = format( info => {
+const koreaTime = format( (info) => {
     info.timestamp = koreaDate.format('hh:mm:ss.SSS');
     return info;
 });
 
-const myFormat = format.printf((info) =>
-    `${info.timestamp} [${info.level.toUpperCase()}] ${info.label} :: ${info.message}`);
+const myFormat = format.printf( (info) => {
+    if(info.err instanceof Error || info.level === 'error') {
+        return `${info.timestamp} [${info.level.toUpperCase()}] :: ${info.message} - ${info.stack}`;
+    }
+    return `${info.timestamp} [${info.level.toUpperCase()}] ${info.label} :: ${info.message}`;
+});
 
 const options = {
     console: {
@@ -20,6 +24,7 @@ const options = {
         colorize: true,
         json: false,
         format: format.combine(
+            format.errors({ stack: true }),
             format.label({ label: ' ' }),
             koreaTime(),
             myFormat,
@@ -37,6 +42,7 @@ const options = {
         maxFiles: 15,
         zippedArchive: false,
         format: format.combine(
+            format.errors({ stack: true }),
             format.label({ label: ' ' }),
             myFormat,
         ),
