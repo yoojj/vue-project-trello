@@ -10,30 +10,33 @@ const morgan = require('morgan');
 const { logger, morganLogger } = require('./config/logger');
 
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const JWTAuth = passport.authenticate('jwt', { session: false });
 require('./config/passport');
 
 const db = require('./models');
 db.sequelize.sync();
 
 const express = require('express');
+const session = require('express-session');
 const app = express();
 
 const env = process.env.NODE_ENV;
 const port = process.env.PORT;
+
+const RESULT = require('./constant/resultCode');
+const token = require('./plugin/token');
 
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({ origin: true, credentials: true }));
 app.use(helmet());
 app.use(morgan({
     format: env === 'production' ? 'default' : 'dev',
     stream: morganLogger,
 }));
+app.use(cors({ origin: true, credentials: true }));
+app.use(passport.initialize());
 
 
 
@@ -46,8 +49,10 @@ app.get('/', (req, res) => {
 
 
 app.use('/auth', require('./routes/auth'));
-app.use('/user', require('./routes/user'));
-app.use('/board', require('./routes/board'));
+app.use('/user', token.verify, require('./routes/user'));
+app.use('/member', token.verify, require('./routes/member'));
+app.use('/card', token.verify, require('./routes/card'));
+app.use('/board', token.verify, require('./routes/board'));
 
 
 
@@ -57,18 +62,17 @@ app.use( (req, res, next) => {
 
 app.use( (err, req, res, next) => {
 
-    // 임시
     logger.error(err.stack);
 
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     res.status(err.status || 500);
     res.json({
+        api: req.originalUrl,
         result: {
-            code: 0,
-            boolean: false,
-            message: err.message,
-            object: null,
+            boolean: RESULT.ERROR.boolean,
+            code: RESULT.ERROR.code,
+            message: RESULT.ERROR.message = err.message,
         },
     });
 
