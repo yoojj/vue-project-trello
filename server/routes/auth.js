@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User } = require('../models');
+const { Member } = require('../models');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 require('../config/passport');
@@ -12,15 +12,15 @@ router.post('/join', async(req, res, next) => {
 
     try {
 
-        const { email, password } = req.body;
+        const { id, password } = req.body;
 
-        if(!email || !password)
-            return next(new Error('이메일이나 비밀번호를 입력하세요.'));
+        if(!id || !password)
+            return next(new Error('아이디나 비밀번호를 입력하세요.'));
 
         // + 유효성 검사 추가
         // + 비밀번호 암호화 추가
 
-        await User.create(req.body);
+        await Member.create(req.body);
 
         res.json({
             api: req.originalUrl,
@@ -39,10 +39,10 @@ router.post('/join', async(req, res, next) => {
 
 router.post('/login', (req, res, next) => {
 
-    const { email, password } = req.body;
+    const { id, password } = req.body;
 
-    if(!email || !password)
-        return next(new Error('이메일이나 비밀번호를 입력하세요.'));
+    if(!id || !password)
+        return next(new Error('아이디나 비밀번호를 입력하세요.'));
 
     try {
 
