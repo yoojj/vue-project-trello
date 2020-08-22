@@ -6,13 +6,13 @@ require('../config/passport');
 
 exports.verify = (req, res, next) => {
 
-    try{
+    try {
 
-        const token = req.headers.authorization.split(' ')[1];
-
-        if(!token){
+        if(!req.headers.authorization){
             return next(new Error('토큰이 없습니다.'));
         }
+
+        const token = req.headers.authorization.split(' ')[1];
 
         req.decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
@@ -24,7 +24,7 @@ exports.verify = (req, res, next) => {
             return next(new Error('토큰이 만료되었습니다.'));
         }
 
-        return next(new Error('토큰이 유효하지 않습니다.'));
+        return next(err);
 
     }
 
