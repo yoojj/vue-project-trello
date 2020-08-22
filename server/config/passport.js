@@ -4,27 +4,30 @@ const passportJWT = require('passport-jwt');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
-const { User } = require('../models');
+const { Member } = require('../models');
 
 
 
 passport.use(new LocalStrategy({
 
-    usernameField: 'email',
+    usernameField: 'id',
     passwordField: 'password',
+    session: false,
     passReqToCallback: true,
 
-}, function(email, password, done){
+}, (req, id, password, done) => {
 
-    return User.findOne({
-        where: { email, password },
+    Member.findOne({
+        
+        where: { id, password },
         attributes: { exclude: ['password'] },
 
     }).then( user => {
-        if(!user)
-            return done(null, false, { message: '로그인 실패' });
 
-        return done(null, { message: '로그인 성공' });
+        if(!user)
+            return done(null, null, { message: '로그인 실패' });
+
+        return done(null, user, { message: '로그인 성공' });
 
     }).catch( err => {
         return done(err);
@@ -32,21 +35,29 @@ passport.use(new LocalStrategy({
 
 }));
 
-passport.use(new LocalStrategy({
+passport.use(new JWTStrategy({
 
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.JWT_SECRET,
+    secretOrKey: process.env.JWT_SECRET_KEY,
 
-}, function(jwtPayload, done){
+}, (jwtPayload, done) => {
 
-    return User.findByPk(jwtPayload.id, {
+    Member.findByPk(jwtPayload.id, {
         attributes: { exclude: ['password'] },
 
     }).then( user => {
         return done(null, user);
 
     }).catch( err => {
-        return done(err);
+        return done(err, null);
     });
 
 }));
+
+passport.serializeUser( (user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser( (user, done) => {
+    done(null, user);
+});
