@@ -4,10 +4,10 @@
 ```bash
 $ npm init
 
-$ npm install body-parser cookie-parser morgan winston dotenv
-$ npm install express express-session express-mysql-session cors helmet
-$ npm install passport passport-jwt passport-local jsonwebtoken
-$ npm install mysql2 sequelize multer
+$ npm install body-parser cookie-parser morgan winston dotenv \
+express express-session express-mysql-session express-validator \
+cors helmet multer bcrypt mysql2 sequelize multer bcryptjs nodemailer \
+passport passport-local passport-http passport-jwt jsonwebtoken
 
 $ express server
 
