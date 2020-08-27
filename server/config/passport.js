@@ -11,15 +11,15 @@ const { Member } = require('../models');
 
 passport.use(new LocalStrategy({
 
-    usernameField: 'id',
+    usernameField: 'email',
     passwordField: 'password',
     session: false,
     passReqToCallback: true,
 
-}, async (req, id, password, done) => {
+}, async (req, email, password, done) => {
 
     await Member.findOne({
-        where: { id },
+        where: { email },
 
     }).then( user => {
 
@@ -45,10 +45,15 @@ passport.use(new JWTStrategy({
 
 }, async (req, jwtPayload, done) => {
 
-    if(jwtPayload.id !== req.path.split('/')[1])
+    const ignore = [
+        'logout',
+        'refresh-token',
+    ];
+
+    if(ignore.includes(req.path) && jwtPayload.email !== req.path.split('/')[1])
         throw new Error('사용자 오류');
 
-    await Member.findByPk(jwtPayload.id, {
+    await Member.findByPk(jwtPayload.email, {
         attributes: { exclude: ['password'] },
 
     }).then( user => {
