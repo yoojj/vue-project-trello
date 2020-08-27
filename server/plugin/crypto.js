@@ -2,22 +2,32 @@ const crypto = require('crypto');
 
 
 
-exports.encryption = (data, key='aes192', hex='base64') => {
+exports.encrypt = (data, key='aes192', hex='base64') => {
+
+    if(data.length == 0)
+        throw new Error();
 
     const cipher = crypto.createCipher(key, process.env.CRYPTO_KEY);
-    cipher.update(data, 'utf8', hex);
 
-    return cipher.final(hex).replace('/', '!=!');
+    return Buffer.concat([
+        cipher.update(data),
+        cipher.final(),
+    ]).toString(hex).replace('/', '!=!');
 
 };
 
-exports.decryption = (data, key='aes192', hex='base64') => {
+exports.decrypt = (data, key='aes192', hex='base64') => {
+
+    if(data.length == 0)
+        throw new Error();
 
     data = data.replace('!=!', '/');
 
     const decipher = crypto.createDecipher(key, process.env.CRYPTO_KEY);
-    decipher.update(data, hex, 'utf8');
 
-    return decipher.final('utf-8');
+    return Buffer.concat([
+        decipher.update(data, hex),
+        decipher.final(),
+    ]).toString();
 
 };
