@@ -5,29 +5,34 @@ const crypto = require('crypto');
 exports.encrypt = (data, key='aes192', hex='base64') => {
 
     if(data.length == 0)
-        throw new Error();
+        return new Error();
 
     const cipher = crypto.createCipher(key, process.env.CRYPTO_KEY);
+    const result = Buffer.concat([
+            cipher.update(data),
+            cipher.final(),
+        ]).toString(hex).replace(/[+]|[/]/g, (match) => {
+            return match == '+' ? '!==!' : '=!!=';
+        });
 
-    return Buffer.concat([
-        cipher.update(data),
-        cipher.final(),
-    ]).toString(hex).replace('/', '!=!');
-
+    return result;
 };
 
 exports.decrypt = (data, key='aes192', hex='base64') => {
 
     if(data.length == 0)
-        throw new Error();
+        return new Error();
 
-    data = data.replace('!=!', '/');
+    data = data.replace(/!==!|=!!=/g, (match) => {
+        return match == '!==!' ? '+' : '/';
+    });
 
     const decipher = crypto.createDecipher(key, process.env.CRYPTO_KEY);
 
-    return Buffer.concat([
+    const result = Buffer.concat([
         decipher.update(data, hex),
         decipher.final(),
     ]).toString();
 
+    return result;
 };
