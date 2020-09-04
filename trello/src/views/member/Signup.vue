@@ -55,47 +55,6 @@
 </layout-content>
 </template>
 
-<style scoped>
-.signup-wrap {min-width:300px;width:50%;margin:0 auto 0;padding:50px;
-    box-sizing:border-box;box-shadow:0 0 10px #ccc;background:#fff;}
-.signup-wrap > h2 {margin-bottom:30px;}
-
-.signup-wrap input[type=text],
-.signup-wrap input[type=password] {width:70%;margin-right:5px;padding:10px;
-    border-radius:3px;border:1px solid #e5e5e5;}
-
-.signup-wrap input[type=submit],
-.signup-wrap button[type=button] {padding:10px 15px;border-radius:3px;transition:background .5s;background:#e5e5e5;}
-
-.signup-wrap input[type=submit]:hover,
-.signup-wrap button[type=button]:hover {color:#fff;background:#026aa7;}
-
-.error-msg {margin-top:5px;color:red;}
-
-
-/* 메일 인증 */
-.mail-auth-from {margin-bottom:50px;}
-.mail-auth-from label {display:inline-block;margin-bottom:5px;}
-
-/* 코드 체크 */
-.code-check-wrap {margin-bottom:50px;}
-.code-check-wrap label {display:inline-block;margin-bottom:5px;}
-
-/* 가입 양식 */
-.signup-form {}
-.signup-form legend {margin-bottom:15px;font-weight:bold;}
-.signup-form ul {margin-bottom:25px;padding:15px;box-sizing:border-box;background:#f5f5f5;}
-.signup-form li {margin-bottom:15px;}
-.signup-form label {display:inline-block;width:25%;}
-.signup-form input[type=text],
-.signup-form input[type=password] {width:70%;box-sizing:border-box;}
-.signup-form input:focus {outline:0 none;border-color:#026aa7;}
-
-.signup-form input[type=submit] {width:100%;padding:15px 10px;color:#fff;
-    box-sizing:border-box;border-radius:5px;transition:background .5s;background:#333;}
-.signup-form input[type=submit]:hover {color:#333;background:#e5e5e5;}
-
-</style>
 
 
 <script>
@@ -272,3 +231,47 @@ export default {
     },
 }
 </script>
+
+
+
+<style scoped>
+.signup-wrap {min-width:300px;width:50%;margin:0 auto 0;padding:50px;
+    box-sizing:border-box;box-shadow:0 0 10px #ccc;background:#fff;}
+.signup-wrap > h2 {margin-bottom:30px;}
+
+.signup-wrap input[type=text],
+.signup-wrap input[type=password] {width:70%;margin-right:5px;padding:10px;
+    border-radius:3px;border:1px solid #e5e5e5;}
+
+.signup-wrap input[type=submit],
+.signup-wrap button[type=button] {padding:10px 15px;border-radius:3px;transition:background .5s;background:#e5e5e5;}
+
+.signup-wrap input[type=submit]:hover,
+.signup-wrap button[type=button]:hover {color:#fff;background:#026aa7;}
+
+.error-msg {margin-top:5px;color:red;}
+
+
+/* 메일 인증 */
+.mail-auth-from {margin-bottom:50px;}
+.mail-auth-from label {display:inline-block;margin-bottom:5px;}
+
+/* 코드 체크 */
+.code-check-wrap {margin-bottom:50px;}
+.code-check-wrap label {display:inline-block;margin-bottom:5px;}
+
+/* 가입 양식 */
+.signup-form {}
+.signup-form legend {margin-bottom:15px;font-weight:bold;}
+.signup-form ul {margin-bottom:25px;padding:15px;box-sizing:border-box;background:#f5f5f5;}
+.signup-form li {margin-bottom:15px;}
+.signup-form label {display:inline-block;width:25%;}
+.signup-form input[type=text],
+.signup-form input[type=password] {width:70%;box-sizing:border-box;}
+.signup-form input:focus {outline:0 none;border-color:#026aa7;}
+
+.signup-form input[type=submit] {width:100%;padding:15px 10px;color:#fff;
+    box-sizing:border-box;border-radius:5px;transition:background .5s;background:#333;}
+.signup-form input[type=submit]:hover {color:#333;background:#e5e5e5;}
+
+</style>
