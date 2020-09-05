@@ -14,6 +14,7 @@ _axios.interceptors.request.use(
 
         const exceptUrl = [
             '/auth/mail',
+            '/auth/code',
             '/auth/join',
             '/auth/login',
         ];
@@ -43,12 +44,10 @@ _axios.interceptors.response.use(
 
 );
 
-
-
 Plugin.install = function(Vue) {
 
     Object.defineProperty(window, 'axios', {
-        get() {return _axios;}
+        get() { return _axios }
     });
 
     Object.defineProperties(Vue.prototype, {
@@ -67,4 +66,4 @@ Vue.use(Plugin);
 
 
 
-export default Plugin
+export default Plugin;
