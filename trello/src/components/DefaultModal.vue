@@ -1,5 +1,5 @@
 <template>
-    <aside class="common-modal-layout common-modal-wrap">
+    <aside class="common-modal-wrap common-modal-layout">
         <h1 class="common-modal-title">
             <slot name="modal-title"/>
         </h1>
@@ -25,16 +25,19 @@ export default {
 
 
 <style scoped>
-.common-modal-layout {position:absolute;min-width:200px;width:25%;min-height:50%;
-    padding:10px 15px;z-index:99999;}
-.common-modal-wrap {text-align:left;border:1px solid #ddd;border-radius:5px;
-    box-shadow:0 0 8px #bbb;background-color:#fff;}
+.common-modal-wrap {border:thin solid #ccc;border-radius:5px;
+    box-shadow:0 0 5px #aaa;background:#fff;}
+
+.common-modal-layout {position:absolute;min-width:300px;min-height:300px;
+    padding:10px 15px;box-sizing:border-box;z-index:99999;}
 
 /* 닫기 버튼 */
-.modal-btn-close {position:absolute;top:10px;right:15px;}
+.modal-btn-close {position:absolute;top:15px;right:15px;padding:5px;
+    border-radius:3px;background:#e5e5e5;}
+.modal-btn-close:hover {background:#c5c5c5;}
 
-/* 모달 제목 */
-.common-modal-title {margin-bottom:20px;line-height:2;border-bottom:1px solid #ccc;}
+/* 제목 */
+.common-modal-title {margin-bottom:25px;line-height:2;border-bottom:thin solid #ccc;}
 
 /* 내용 */
 .common-modal-content {}
