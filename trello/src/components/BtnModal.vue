@@ -1,8 +1,8 @@
 <template>
-<span style="display:inline-block;">
-    <button type="button" :class="btnCss" @click="showModal">{{ buttonName }}</button>
+<span class="btn-modal-wrap">
+    <button type="button" :class="buttonCss" @click="showModal">{{ buttonName }}</button>
 
-    <v-modal :class="this.parentClass" v-if="isModalVisible" @close-modal="isModalVisible=false">
+    <v-modal :class="modalCss" v-if="isModalVisible" @close-modal="isModalVisible=false">
 
         <template slot="modal-title">
             <slot name="title"/>
@@ -30,9 +30,9 @@ export default {
     },
 
     props: [
-        'parentClass',
-        'btnCss',
-        'buttonName'
+        'buttonCss',
+        'buttonName',
+        'modalCss',
     ],
 
     data() {
@@ -43,9 +43,15 @@ export default {
 
     methods: {
         showModal() {
-            this.isModalVisible = true;
+            this.isModalVisible = !this.isModalVisible;
         },
     },
-    
+
 }
 </script>
+
+
+
+<style scoped>
+.btn-modal-wrap {position:relative;display:inline-block;}
+</style>
