@@ -3,7 +3,7 @@
     <section class="signup-wrap">
         <h2>회원가입</h2>
 
-        <form class="mail-auth-from" v-show="isMailSend"@submit.prevent="formMailAuth">
+        <form class="mail-auth-from" v-show="isMailSend" @submit.prevent="formMailAuth">
         <fieldset>
             <legend class="hide">이메일 인증</legend>
 
@@ -27,6 +27,10 @@
         <fieldset>
             <legend>회원 가입 양식 입력</legend>
             <ul>
+                <li>
+                    <label for="userAuthEmail">이메일</label>
+                    <input type="text" id="userAuthEmail" v-bind:value="user.email.value" readonly>
+                </li>
                 <li>
                     <label for="userName">이름</label>
                     <input type="text" id="userName" title="이름을 입력하세요."
@@ -58,7 +62,7 @@
 
 
 <script>
-import {LayoutContent} from '@/layout/'
+import { LayoutContent } from '@/layout/'
 import validate from '@/_utils/validate'
 
 export default {
@@ -68,7 +72,6 @@ export default {
     components: {
         LayoutContent,
     },
-
 
     data() {
         return {
@@ -93,7 +96,7 @@ export default {
                     min: this.$store.getters.VAILD.ID.min,
                     pattern: this.$store.getters.PATTERN.USER_ID,
                     error: '',
-                    required: false,
+                    required: true,
                     validated: false,
                 },
                 email: {
@@ -117,28 +120,22 @@ export default {
     },
 
 
-    watch: {
-
-        user: {
-            deep: true,
-            handler: function(user) {
-                for(let key in user){
-                    if(user[key].value != undefined && user[key].value.length > 0 && user[key].required == true)
-                        validate.userForm(user[key]);
-                }
-            },
-        },
-
-    },
-
-
     methods: {
 
         valid(data){
-
             for(let key in data){
-                if(this.user[key].required == true && this.user[key].validated == false){
-                    alert('양식을 작성해주세요.');
+
+                if(this.user[key].required == true && this.user[key].value.length < 1){
+                    alert(`${key}을(를) 작성해주세요.`);
+                    return false;
+
+                } else if(this.user[key].required == true && this.user[key].validated == false){
+                    validate.userForm(this.user[key]);
+
+                    if(this.user[key].required == true && this.user[key].validated == true){
+                        continue;
+                    }
+
                     return false;
                 }
             }
@@ -146,7 +143,7 @@ export default {
             return true;
         },
 
-        formMailAuth(){
+        async formMailAuth(){
 
             const $data = {
                 email: this.user.email.value,
@@ -154,7 +151,7 @@ export default {
 
             if(this.valid($data) == false) return;
 
-            this.$store.dispatch('MAIL_AUTH',
+            await this.$store.dispatch('MAIL_AUTH',
                 $data
 
             ).then( data => {
@@ -196,7 +193,7 @@ export default {
 
         },
 
-        formUserSignup() {
+        async formUserSignup() {
 
             const $data = {
                 name: this.user.name.value,
@@ -205,9 +202,11 @@ export default {
                 password: this.user.password.value,
             };
 
+            if(!this.user.id.value) delete $data.id;
+
             if(this.valid($data) == false) return;
 
-            this.$store.dispatch('SIGN_UP',
+            await this.$store.dispatch('SIGN_UP',
                 $data
 
             ).then( data => {
@@ -216,11 +215,6 @@ export default {
                     alert('회원 가입 성공, 로그인 페이지로 이동합니다.');
                     this.$router.push('login');
 
-                } else {
-                    alert('회원 가입에 실패했습니다.');
-                    this.user.name.value = '';
-                    this.user.email.value = '';
-                    this.user.password.value  = '';
                 }
 
             }).catch( err => {
@@ -274,4 +268,5 @@ export default {
     box-sizing:border-box;border-radius:5px;transition:background .5s;background:#333;}
 .signup-form input[type=submit]:hover {color:#333;background:#e5e5e5;}
 
+.signup-form .error-msg {margin-left:25%;}
 </style>
