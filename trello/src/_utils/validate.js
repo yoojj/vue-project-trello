@@ -8,8 +8,8 @@ export default {
         } else if($data.required == true && $data.validated == false){
             this.valid($data);
 
-        } else if($data.required == true && $data.validated == true){
-            return callback(true);
+            if($data.required == true && $data.validated == true)
+                return callback(true);
         }
 
         return callback($data);
@@ -24,8 +24,8 @@ export default {
             } else if($data[key].required == true && $data[key].validated == false){
                 this.valid($data[key]);
 
-            } else if($data[key].required == true && $data[key].validated == true){
-                return callback(true);
+                if($data[key].required == true && $data[key].validated == true)
+                    return callback(true);
             }
 
         }
