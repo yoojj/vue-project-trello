@@ -8,7 +8,7 @@ export default {
         } else if($data.required == true && $data.validated == false){
             this.valid($data);
 
-        } else if($data.required == true && $data.value.validated == true){
+        } else if($data.required == true && $data.validated == true){
             return callback(true);
         }
 
