@@ -85,6 +85,7 @@ export default {
             user: {
                 name: {
                     value: '',
+                    name: '이름',
                     min: this.$store.getters.VAILD.NAME.min,
                     pattern: this.$store.getters.PATTERN.USER_NAME,
                     error: '',
@@ -93,6 +94,7 @@ export default {
                 },
                 id: {
                     value: '',
+                    name: '아이디',
                     min: this.$store.getters.VAILD.ID.min,
                     pattern: this.$store.getters.PATTERN.USER_ID,
                     error: '',
@@ -101,6 +103,7 @@ export default {
                 },
                 email: {
                     value: '',
+                    name: '이메일',
                     pattern: this.$store.getters.PATTERN.USER_EMAIL,
                     error : '',
                     required: true,
@@ -108,6 +111,7 @@ export default {
                 },
                 password: {
                     value: '',
+                    name: '비밀번호',
                     min: this.$store.getters.VAILD.PASSWORD.min,
                     pattern: this.$store.getters.PATTERN.USER_PWD,
                     error : '',
@@ -119,58 +123,40 @@ export default {
         }
     },
 
-
     methods: {
 
-        valid(data){
-            for(let key in data){
+        formMailAuth(){
 
-                if(this.user[key].required == true && this.user[key].value.length < 1){
-                    alert(`${key}을(를) 작성해주세요.`);
-                    return false;
+            validate.value(this.user.email, result => {
+                if(result != true){
+                    this.user.email = result;
 
-                } else if(this.user[key].required == true && this.user[key].validated == false){
-                    validate.userForm(this.user[key]);
+                } else {
+                    this.user.email.error = '';
 
-                    if(this.user[key].required == true && this.user[key].validated == true){
-                        continue;
-                    }
+                    this.$store.dispatch('MAIL_AUTH', {
+                        email: this.user.email.value,
 
-                    return false;
+                    }).then( data => {
+
+                        if(data.result.boolean)
+                            alert(data.result.message);
+
+                        //this.isMailSend = !this.isMailSend;
+                        //this.isCodeCheck = !this.isCodeCheck;
+
+                    }).catch( err => {
+                        alert(err);
+                    });
                 }
-            }
 
-            return true;
-        },
-
-        async formMailAuth(){
-
-            const $data = {
-                email: this.user.email.value,
-            };
-
-            if(this.valid($data) == false) return;
-
-            await this.$store.dispatch('MAIL_AUTH',
-                $data
-
-            ).then( data => {
-
-                if(data.result.boolean)
-                    alert(data.result.message);
-
-                //this.isMailSend = !this.isMailSend;
-                //this.isCodeCheck = !this.isCodeCheck;
-
-            }).catch( err => {
-                alert(err);
             });
 
         },
 
         btnCodeCheck() {
 
-            if(!this.code)
+            if(!this.code || this.code.length < 24)
                 return alert('인증 코드를 입력해주세요.');
 
             this.$store.dispatch('CODE_CHECK', {
@@ -193,34 +179,37 @@ export default {
 
         },
 
-        async formUserSignup() {
+        formUserSignup() {
 
-            const $data = {
-                name: this.user.name.value,
-                id: this.user.id.value,
-                email: this.user.email.value,
-                password: this.user.password.value,
-            };
+            validate.object(this.user, result => {
+                if(result != true){
+                    for(let key in result)
+                        this.user[key] = result[key];
 
-            if(!this.user.id.value) delete $data.id;
+                } else {
+                    for(let key in result)
+                        this.user[key].error = '';
 
-            if(this.valid($data) == false) return;
+                    this.$store.dispatch('SIGN_UP', {
+                        name: this.user.name.value,
+                        id: this.user.id.value,
+                        email: this.user.email.value,
+                        password: this.user.password.value,
 
-            await this.$store.dispatch('SIGN_UP',
-                $data
+                    }).then( data => {
 
-            ).then( data => {
+                        if(data.result.boolean){
+                            alert('회원 가입 성공, 로그인 페이지로 이동합니다.');
+                            this.$router.push('login');
 
-                if(data.result.boolean){
-                    alert('회원 가입 성공, 로그인 페이지로 이동합니다.');
-                    this.$router.push('login');
+                        }
+
+                    }).catch( err => {
+                        alert(err);
+                    });
 
                 }
-
-            }).catch( err => {
-                alert(err);
             });
-
         },
     },
 }
