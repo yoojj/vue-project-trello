@@ -181,35 +181,34 @@ export default {
 
         formUserSignup() {
 
-            validate.object(this.user, result => {
-                if(result != true){
-                    for(let key in result)
+            validate.object(this.user, async(result) => {
+
+                for(let key in result){
+                    if(result[key].required == true && result[key].validated == false){
                         this.user[key] = result[key];
-
-                } else {
-                    for(let key in result)
-                        this.user[key].error = '';
-
-                    this.$store.dispatch('SIGN_UP', {
-                        name: this.user.name.value,
-                        id: this.user.id.value,
-                        email: this.user.email.value,
-                        password: this.user.password.value,
-
-                    }).then( data => {
-
-                        if(data.result.boolean){
-                            alert('회원 가입 성공, 로그인 페이지로 이동합니다.');
-                            this.$router.push('login');
-
-                        }
-
-                    }).catch( err => {
-                        alert(err);
-                    });
-
+                        return false;
+                    }
                 }
+
+                await this.$store.dispatch('SIGN_UP', {
+                    name: this.user.name.value,
+                    id: this.user.id.value,
+                    email: this.user.email.value,
+                    password: this.user.password.value,
+
+                }).then( data => {
+
+                    if(data.result.boolean){
+                        alert('회원 가입 성공, 로그인 페이지로 이동합니다.');
+                        this.$router.push('login');
+                    }
+
+                }).catch( err => {
+                    alert(err);
+                });
+
             });
+
         },
     },
 }
