@@ -10,10 +10,8 @@
                 <li>
                     <label for="userEmailOrId">이메일 or 아이디</label>
                     <input type="text" id="userEmailOrId" title="이메일이나 아이디를 입력하세요."
-                        v-model.lazy="userEmailOrId">
-                    <p class="error-msg" v-show="user.email.error || user.id.error">
-                        {{ user.email.error || user.id.error }}
-                    </p>
+                        v-model.lazy="userEmailOrId.value">
+                    <p class="error-msg" v-show="userEmailOrId.error">{{ userEmailOrId.error }}</p>
                 </li>
                 <li>
                     <label for="userPwd">비밀번호</label>
@@ -26,7 +24,8 @@
             <input type="submit" value="로그인">
         </fieldset>
         </form>
-
+{{ this.user.email.value  }}
+{{ this.user.id.value  }}
     </section>
 </layout-content>
 </template>
@@ -47,8 +46,16 @@ export default {
 
     data() {
         return {
-            // 유효성 검사 추가 
-            userEmailOrId: '',
+
+            userEmailOrId: {
+                value: '',
+                name: '이메일이나 아이디',
+                min: this.$store.getters.VAILD.ID.min,
+                pattern: '',
+                error : '',
+                required: true,
+                validated: false,
+            },
 
             user: {
                 email: {
@@ -68,6 +75,7 @@ export default {
                 },
                 password: {
                     value: '',
+                    name: '비밀번호',
                     min: this.$store.getters.VAILD.PASSWORD.min,
                     pattern: this.$store.getters.PATTERN.USER_PWD,
                     error : '',
@@ -79,63 +87,61 @@ export default {
         }
     },
 
-
     watch: {
+
         userEmailOrId: {
+            deep: true,
             handler(userEmailOrId) {
-                userEmailOrId.includes('@')
-                    ? this.user.email.value = userEmailOrId
-                    : this.user.id.value = userEmailOrId
+                if(userEmailOrId.value.includes('@')){
+                    this.user.email.value = userEmailOrId.value;
+                    this.user.id.value = '';
+                    userEmailOrId.pattern = this.$store.getters.PATTERN.USER_EMAIL;
+                } else {
+                    this.user.email.value = 'null';
+                    this.user.id.value = userEmailOrId.value;
+                    userEmailOrId.pattern = this.$store.getters.PATTERN.USER_ID;
+                }
             }
         },
-    },
 
+    },
 
     methods: {
 
-        valid(data){
-            for(let key in data){
-
-                if(this.user[key].required == true && this.user[key].value.length < 1){
-                    alert(`${key}을(를) 작성해주세요.`);
-                    return false;
-
-                } else if(this.user[key].required == true && this.user[key].validated == false){
-                    validate.userForm(this.user[key]);
-
-                    if(this.user[key].required == true && this.user[key].validated == true){
-                        continue;
-                    }
-
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
         formUserLogin() {
 
-            const $data = {
-                email: this.user.email.value,
-                id: this.user.id.value,
-                password: this.user.password.value,
-            };
+            validate.object({
+                e: this.userEmailOrId,
+                p: this.user.password,
 
-            if(this.valid($data) == false) return;
+            }, async(result) => {
 
-            this.$store.dispatch('LOGIN',
-                $data
+                for(let key in result){
 
-            ).then( data => {
-                if(data.result.boolean)
-                    this.$router.go('/');
+                    if(result[key].required == true && result[key].validated == false){
+                        key == 'e'
+                          ? this.userEmailOrId = result[key]
+                          : this.user.password= result[key]
+                        return false;
+                    }
+                }
 
-            }).catch( err => {
-                alert(err);
-                this.user.email.value = '';
-                this.user.id.value = '';
-                this.user.password.value  = '';
+                await this.$store.dispatch('LOGIN', {
+                    email: this.user.email.value,
+                    id: this.user.id.value,
+                    password: this.user.password.value,
+                    
+                }).then( data => {
+
+                    if(data.result.boolean){
+                        this.$router.go('/');
+                    }
+
+                }).catch( err => {
+                    alert(err);
+                    this.user.password.value  = '';
+                });
+
             });
 
         },
