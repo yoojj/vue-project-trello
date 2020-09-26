@@ -1,0 +1,105 @@
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+
+import store from '@/_vuex/store'
+import PATH from '@/_constant/path'
+
+Vue.use(VueRouter);
+
+let userId;
+
+if(store.getters.token)
+    userId = store.getters.user.id || store.getters.user.cno;
+
+const isUserLogin = (bool) => (to, from, next) => {
+
+    if(bool==false){
+        !store.getters.token
+          ? next()
+          : next({path: `/${userId}` })
+
+    } else if(bool==true){
+        store.getters.token
+          ? next()
+          : next({path: 'login'})
+
+    } else {
+        next({path: '/404'})
+    }
+
+}
+
+export default new VueRouter({
+
+    mode: 'history',
+
+    base: process.env.BASE_URL,
+
+    //scrollBehavior: () => ({ y:0 }),
+
+    routes: [
+        {
+            path: '/404',
+            alias: '*',
+            name: PATH.NOT_FOUND.name,
+            component: PATH.NOT_FOUND,
+        },{
+            path: '/',
+            name: PATH.TRELLO.name,
+            component: PATH.TRELLO,
+            beforeEnter: isUserLogin(false),
+        },{
+            path: '/signup',
+            name: PATH.SIGN_UP.name,
+            component: PATH.SIGN_UP,
+            beforeEnter: isUserLogin(false),
+        },{
+            path: '/login',
+            name: PATH.LOGIN.name,
+            component: PATH.LOGIN,
+            beforeEnter: isUserLogin(false),
+        },{
+            path: '/logout',
+            name: PATH.LOGOUT.name,
+            component: PATH.LOGOUT,
+            beforeRouteUpdate: isUserLogin(false),
+        },{
+            path: `/${userId}`,
+            name: PATH.USER_HOME.name,
+            component: PATH.USER_HOME,
+            beforeEnter: isUserLogin(true),
+            //children: []
+        },{
+            path: `/${userId}/profile`,
+            alias: '/profile',
+            name: PATH.USER_PROFILE.name,
+            component: PATH.USER_PROFILE,
+            beforeEnter: isUserLogin(true),
+        },{
+            path: `/${userId}/board-list`,
+            alias: '/board-list',
+            name: PATH.BOARD_LIST.name,
+            component: PATH.BOARD_LIST,
+            beforeEnter: isUserLogin(true),
+        },{
+            path: `/${userId}/card-list/:bno`,
+            alias: '/card-list/:bno',
+            name: PATH.CARD_LIST.name,
+            component: PATH.CARD_LIST,
+            beforeEnter: isUserLogin(true),
+            beforeEnter: (to, from, next) => {
+                // 임시
+                if(to.params.bno > 10){
+                    next({path: '/404'});
+                } else {
+                    next();
+                }
+            },
+        },{
+            path: '/search',
+            name: PATH.SEARCH.name,
+            component: PATH.SEARCH,
+            //beforeEnter: isUserLogin(true),
+        },
+    ]
+});
