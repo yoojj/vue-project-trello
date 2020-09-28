@@ -1,32 +1,31 @@
 <template>
 <layout-content>
-    <section class="login-wrap">
-        <h2>로그인</h2>
+<section class="login-wrap">
+    <h1>로그인</h1>
 
-        <form class="login-form" @submit.prevent="formUserLogin">
-        <fieldset>
-            <legend class="hide">회원 로그인</legend>
-            <ul>
-                <li>
-                    <label for="userEmailOrId">이메일 or 아이디</label>
-                    <input type="text" id="userEmailOrId" title="이메일이나 아이디를 입력하세요."
-                        v-model.lazy="userEmailOrId.value">
-                    <p class="error-msg" v-show="userEmailOrId.error">{{ userEmailOrId.error }}</p>
-                </li>
-                <li>
-                    <label for="userPwd">비밀번호</label>
-                    <input type="password" id="userPwd" title="비밀번호을 입력하세요."
-                        v-model.lazy="user.password.value">
-                    <p class="error-msg" v-show="user.password.error">{{ user.password.error }}</p>
-                </li>
-            </ul>
+    <form class="login-form" @submit.prevent="formUserLogin">
+    <fieldset>
+        <legend class="hide">회원 로그인</legend>
+        <ul>
+            <li>
+                <label for="userEmailOrId">이메일 or 아이디</label>
+                <input type="text" id="userEmailOrId" title="이메일이나 아이디를 입력하세요."
+                    v-model.lazy="userEmailOrId.value">
+                <p class="error-msg" v-show="userEmailOrId.error">{{ userEmailOrId.error }}</p>
+            </li>
+            <li>
+                <label for="userPwd">비밀번호</label>
+                <input type="password" id="userPwd" title="비밀번호을 입력하세요."
+                    v-model.lazy="user.password.value">
+                <p class="error-msg" v-show="user.password.error">{{ user.password.error }}</p>
+            </li>
+        </ul>
 
-            <input type="submit" value="로그인">
-        </fieldset>
-        </form>
-{{ this.user.email.value  }}
-{{ this.user.id.value  }}
-    </section>
+        <input type="submit" value="로그인">
+    </fieldset>
+    </form>
+
+</section>
 </layout-content>
 </template>
 
@@ -87,6 +86,7 @@ export default {
         }
     },
 
+
     watch: {
 
         userEmailOrId: {
@@ -105,6 +105,7 @@ export default {
         },
 
     },
+
 
     methods: {
 
@@ -130,11 +131,11 @@ export default {
                     email: this.user.email.value,
                     id: this.user.id.value,
                     password: this.user.password.value,
-                    
+
                 }).then( data => {
 
                     if(data.result.boolean){
-                        this.$router.go('/');
+                        location.href = '/';
                     }
 
                 }).catch( err => {
@@ -148,15 +149,16 @@ export default {
 
     },
 
+
 }
 </script>
 
 
 
-<style scoped>
+<style>
 .login-wrap {min-width:300px;width:50%;margin:0 auto;padding:50px;
     box-sizing:border-box;box-shadow:0 0 10px #ccc;background:#fff;}
-.login-wrap > h2 {margin-bottom:30px;}
+.login-wrap h1 {margin-bottom:30px;}
 
 .login-form ul {margin-bottom:30px;}
 .login-form li {margin-bottom:30px;}
