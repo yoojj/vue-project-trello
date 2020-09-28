@@ -1,61 +1,65 @@
 <template>
 <layout-content>
-    <section class="signup-wrap">
-        <h2>회원가입</h2>
+<section class="signup-wrap">
+    <h1>회원가입</h1>
 
-        <form class="mail-auth-from" v-show="isMailSend" @submit.prevent="formMailAuth">
-        <fieldset>
-            <legend class="hide">이메일 인증</legend>
+    <form class="mail-auth-from" v-show="isMailSend" @submit.prevent="formMailAuth">
+    <fieldset>
 
-            <label for="userEmail">메일 인증을 위해 사용하는 이메일을 입력해주세요.</label>
+        <legend class="hide">이메일 인증</legend>
 
-            <input type="text" id="userEmail" title="이메일을 입력하세요."
-                v-model.lazy="user.email.value">
-            <input type="submit" value="메일 인증">
+        <label for="userEmail">메일 인증을 위해 사용하는 이메일을 입력해주세요.</label>
 
-            <p class="error-msg" v-show="user.email.error">{{ user.email.error }}</p>
-        </fieldset>
-        </form>
+        <input type="text" id="userEmail" title="이메일을 입력하세요."
+            v-model.lazy="user.email.value">
+        <input type="submit" value="메일 인증">
 
-        <div class="code-check-wrap" v-show="isCodeCheck">
-            <label for="codeCheck">인증 코드를 입력하세요.</label>
-            <input type="text" id="codeCheck" v-model.lazy="code">
-            <button type="button" @click="btnCodeCheck">코드 확인</button>
-        </div>
+        <p class="error-msg" v-show="user.email.error">{{ user.email.error }}</p>
 
-        <form class="signup-form" v-show="isMailAuth" @submit.prevent="formUserSignup">
-        <fieldset>
-            <legend>회원 가입 양식 입력</legend>
-            <ul>
-                <li>
-                    <label for="userAuthEmail">이메일</label>
-                    <input type="text" id="userAuthEmail" v-bind:value="user.email.value" readonly>
-                </li>
-                <li>
-                    <label for="userName">이름</label>
-                    <input type="text" id="userName" title="이름을 입력하세요."
-                        v-model.lazy="user.name.value">
-                    <p class="error-msg" v-show="user.name.error">{{ user.name.error }}</p>
-                </li>
-                <li>
-                    <label for="userId">아이디</label>
-                    <input type="text" id="userId" title="아이디를 입력하세요."
-                        v-model.lazy="user.id.value">
-                    <p class="error-msg" v-show="user.id.error">{{ user.id.error }}</p>
-                </li>
-                <li>
-                    <label for="userPwd">비밀번호</label>
-                    <input type="password" id="userPwd" title="비밀번호을 입력하세요."
-                        v-model.lazy="user.password.value">
-                    <p class="error-msg" v-show="user.password.error">{{ user.password.error }}</p>
-                </li>
-            </ul>
+    </fieldset>
+    </form>
 
-            <input type="submit" value="회원가입">
-        </fieldset>
-        </form>
+    <div class="code-check-wrap" v-show="isCodeCheck">
+        <label for="codeCheck">인증 코드를 입력하세요.</label>
+        <input type="text" id="codeCheck" v-model.lazy="code">
+        <button type="button" @click="btnCodeCheck">코드 확인</button>
+    </div>
 
-    </section>
+    <form class="signup-form" v-show="isMailAuth" @submit.prevent="formUserSignup">
+    <fieldset>
+        <legend>회원 가입 양식 입력</legend>
+
+        <ul>
+            <li>
+                <label for="userAuthEmail">이메일</label>
+                <input type="text" id="userAuthEmail" v-bind:value="user.email.value" readonly>
+            </li>
+            <li>
+                <label for="userName">이름</label>
+                <input type="text" id="userName" title="이름을 입력하세요."
+                    v-model.lazy="user.name.value">
+                <p class="error-msg" v-show="user.name.error">{{ user.name.error }}</p>
+            </li>
+            <li>
+                <label for="userId">아이디</label>
+                <input type="text" id="userId" title="아이디를 입력하세요."
+                    v-model.lazy="user.id.value">
+                <p class="error-msg" v-show="user.id.error">{{ user.id.error }}</p>
+            </li>
+            <li>
+                <label for="userPwd">비밀번호</label>
+                <input type="password" id="userPwd" title="비밀번호을 입력하세요."
+                    v-model.lazy="user.password.value">
+                <p class="error-msg" v-show="user.password.error">{{ user.password.error }}</p>
+            </li>
+        </ul>
+
+        <input type="submit" value="회원가입">
+
+    </fieldset>
+    </form>
+
+</section>
 </layout-content>
 </template>
 
@@ -122,6 +126,7 @@ export default {
 
         }
     },
+
 
     methods: {
 
@@ -210,16 +215,19 @@ export default {
             });
 
         },
+
     },
+
+
 }
 </script>
 
 
 
-<style scoped>
+<style>
 .signup-wrap {min-width:300px;width:50%;margin:0 auto 0;padding:50px;
     box-sizing:border-box;box-shadow:0 0 10px #ccc;background:#fff;}
-.signup-wrap > h2 {margin-bottom:30px;}
+.signup-wrap h1 {margin-bottom:30px;}
 
 .signup-wrap input[type=text],
 .signup-wrap input[type=password] {width:70%;margin-right:5px;padding:10px;
