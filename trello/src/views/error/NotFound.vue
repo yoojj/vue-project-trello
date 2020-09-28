@@ -1,9 +1,11 @@
 <template>
 <layout-content>
-    <section class="error-404">
-        <h2>Page not found</h2>
-        <p>{{ $t('error.404') }}</p>
-    </section>
+<section class="error-404-wrap">
+    <h1>Page not found</h1>
+
+    <p>{{ $t('error.404') }}</p>
+
+</section>
 </layout-content>
 </template>
 
@@ -25,7 +27,8 @@ export default {
 
 
 
-<style scope>
-.error-404 {text-align:center;}
-.error-404 h2 {margin-bottom:25px;}
+<style>
+.error-404-wrap {}
+.error-404-wrap h1 {margin-bottom:30px;text-align:center;}
+.error-404-wrap p {text-align:center;}
 </style>
