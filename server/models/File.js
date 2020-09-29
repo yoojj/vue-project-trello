@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true,
         },
-        FileName: {
+        fileName: {
             type: DataTypes.STRING,
             allowNull: false,
             defaultValue: '',
@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: true,
         },
+
     },{
         tableName: 'file',
         freezeTableName : false,
@@ -35,8 +36,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     File.associate = (model) => {
-        File.belongsTo(model.User, { onDelete: 'CASCADE' });
-        File.belongsTo(model.Card, { onDelete: 'CASCADE' });
+        File.belongsTo(model.User, { foreignKey: { name: 'uno', allowNull: false }, onDelete: 'CASCADE' });
+        File.belongsTo(model.Content, { foreignKey: { name: 'ccno', allowNull: false }, onDelete: 'CASCADE' });
     };
 
     return File;
