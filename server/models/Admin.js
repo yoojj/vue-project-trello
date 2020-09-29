@@ -14,11 +14,17 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        state: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        },
         loginedAt: {
             type: DataTypes.STRING,
             allowNull: false,
             defaultValue: '',
         },
+
     },{
         tableName: 'admin',
         freezeTableName : false,
