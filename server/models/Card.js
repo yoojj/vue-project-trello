@@ -10,18 +10,23 @@ module.exports = (sequelize, DataTypes) => {
         title: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: '',
         },
-        content: {
-            type: DataTypes.TEXT,
+        order: {
+            type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: '',
+            defaultValue: 0,
+        },
+        watch: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
         },
         state: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
         },
+
     },{
         tableName: 'card',
         freezeTableName : false,
@@ -30,9 +35,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Card.associate = (model) => {
-        Card.belongsTo(model.User, { onDelete: 'CASCADE' });
-        Card.hasMany(model.File, { foreignKey: 'cno'});
-        Card.hasMany(model.Reply, { foreignKey: 'cno'});
+        Card.belongsTo(model.User, { foreignKey: { name: 'uno', allowNull: false }, onDelete: 'CASCADE' });
+        Card.belongsTo(model.Board, { foreignKey: { name: 'bno', allowNull: false }, onDelete: 'CASCADE' });
     };
 
     return Card;
