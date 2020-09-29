@@ -12,11 +12,17 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: '',
         },
+        bgcolor: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
         state: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
         },
+        
     },{
         tableName: 'board',
         freezeTableName : false,
