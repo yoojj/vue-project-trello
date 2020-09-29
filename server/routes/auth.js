@@ -40,7 +40,7 @@ router.post('/mail', body('email').isEmail(), async(req, res, next) => {
 
         if(!vaildError.isEmpty()) {
             res.resultObj = vaildError;
-            return next(new Error('유효한 이메일 형식이 아닙니다.'));
+            return next('유효한 이메일이 아닙니다.');
         }
 
         await User.findOne({
@@ -49,7 +49,7 @@ router.post('/mail', body('email').isEmail(), async(req, res, next) => {
         }).then( user => {
 
             if(user && user.email && user.password.length > 0){
-                return next(new Error('사용중인 이메일입니다.'));
+                return next('사용중인 이메일입니다.');
 
             // 메일 인증은 했으나 가입이 안된 경우
             } else if(user && user.email && user.password.length < 1){
@@ -67,7 +67,7 @@ router.post('/mail', body('email').isEmail(), async(req, res, next) => {
 
                 // 인증 시간 이내
                 if(timeResult < 61) {
-                    return next(new Error('사용중인 이메일입니다.'));
+                    return next('사용중인 이메일입니다.');
 
                 // 인증 시간이 지났으므로 해당 메일 삭제
                 } else {
@@ -78,11 +78,12 @@ router.post('/mail', body('email').isEmail(), async(req, res, next) => {
                             email: user.uno,
                         }, {
                             where: { uno: user.uno },
-                        }, transaction
+                        },
+                            transaction
 
                         ).then( result => {
 
-                            return User.destroy({
+                            User.destroy({
                                 where: { uno: user.uno },
                             }, transaction );
 
@@ -96,15 +97,14 @@ router.post('/mail', body('email').isEmail(), async(req, res, next) => {
             }
 
             // 메일 발송
-            const time = koreaDate.format('HH:mm:ss').toString();
-            const key = crypto.encrypt(time);
+            const time = crypto.encrypt(koreaDate.format('HH:mm:ss').toString());
             const email = crypto.encrypt(req.body.email);
-            const link = url.host(req) + '/auth/mail/?k=' + key +'&e=' + email;
+            const key = time + '&&&' + email;
 
             mail.send({
                 to: req.body.email,
                 subject: '이메일 확인',
-                html: `<p><a href="${link}">${link}</a></p>`,
+                html: `<p> ${key} </p>`,
 
             }).then( result => {
 
@@ -131,13 +131,14 @@ router.post('/mail', body('email').isEmail(), async(req, res, next) => {
 
 });
 
-// 임시 get
-router.get('/mail', async(req, res, next) => {
+router.post('/code', async(req, res, next) => {
 
     try {
 
-        const key = crypto.decrypt(req.query.k);
-        const email = crypto.decrypt(req.query.e);
+        const code = req.body.code.split('&&&');
+
+        const key = crypto.decrypt(code[0]);
+        const email = crypto.decrypt(code[1]);
 
         const keyTime = koreaDate.format(key).split(':');
         const nowTime = koreaDate.format('HH:mm:ss').toString().split(':');
@@ -147,19 +148,28 @@ router.get('/mail', async(req, res, next) => {
             timeCheck.push(val);
         });
 
-        const timeResult = (timeCheck[0]*60) + timeCheck[1];
+        const timeResult = +(timeCheck[0]*60) + timeCheck[1];
 
-        if(timeResult > 61)
-            res.sendFile('mail-auth-fail.html',  { root: './public/' });
+        if(Math.abs(timeResult) > 61)
+            return next('인증 시간이 지났습니다.');
 
-        await User.create({
-            email,
+        await User.findOrCreate({
+            where: { email }
 
-        }).then( result => {
-            res.sendFile('mail-auth-success.html',  { root: './public/' });
+        }).then( user => {
+
+            res.json({
+                api: req.originalUrl,
+                result: {
+                    boolean: RESULT.SUCCESS.boolean,
+                    code: RESULT.SUCCESS.code,
+                    message: RESULT.SUCCESS.message,
+                },
+                email,
+            });
 
         }).catch( err => {
-            res.sendFile('mail-auth-fail.html',  { root: './public/' });
+            next(err);
         });
 
     } catch(err){
@@ -167,8 +177,6 @@ router.get('/mail', async(req, res, next) => {
     }
 
 });
-
-
 
 router.post('/join', valid, async(req, res, next) => {
 
@@ -178,15 +186,16 @@ router.post('/join', valid, async(req, res, next) => {
 
         if (!vaildError.isEmpty()) {
             res.resultObj = vaildError;
-            return next(new Error('유효성 오류'));
+            return next(vaildError.errors);
         }
 
         req.body.password = bcrypt.hashSync(req.body.password);
 
         await User.update({
-            id: req.body.id,
+            id: req.body.id || '',
             password: req.body.password,
-            name: req.body.name,
+            name: req.body.name || '',
+
         }, {
             where: { email: req.body.email }
 
@@ -202,6 +211,7 @@ router.post('/join', valid, async(req, res, next) => {
             });
 
         }).catch( err => {
+            if(err.message == 'Validation error') next('사용중인 아이디입니다.');
             next(err);
         });
 
@@ -211,9 +221,16 @@ router.post('/join', valid, async(req, res, next) => {
 
 });
 
-router.post('/login', valid, (req, res, next) => {
+router.post('/login', (req, res, next) => {
 
     try {
+
+        const vaildError = validationResult(req);
+
+        if (!vaildError.isEmpty()) {
+            res.resultObj = vaildError;
+            return next(vaildError.errors);
+        }
 
         passport.authenticate('local', { session: false }, (err, user, info) => {
 
@@ -228,9 +245,11 @@ router.post('/login', valid, (req, res, next) => {
                 if(err)
                     return next(err);
 
-                user.loginedAt = koreaDate.format('YYYY-MM-DD HH:mm:ss').toString();
-
-                User.update({ loginedAt: user.loginedAt }, { where: { email: user.email } });
+                User.update({
+                    loginedAt: sequelize.fn('NOW'),
+                }, {
+                    where: { email: user.email }
+                });
 
                 const token = jwt.sign({...user.dataValues}, process.env.JWT_SECRET_KEY, {
                     expiresIn: '1h',
@@ -284,19 +303,31 @@ router.post('/refresh-token', token.verify, (req, res, next) => {
 
 });
 
-router.post('/logout', token.verify, (req, res, next) => {
+router.post('/logout', token.verify, async(req, res, next) => {
 
     try {
 
-        req.logout();
+        await User.update({
+            loginedAt: '',
+            
+        }, {
+            where: { uno: req.user.uno }
 
-        res.json({
-            api: req.originalUrl,
-            result: {
-                boolean: RESULT.SUCCESS.boolean,
-                code: RESULT.SUCCESS.code,
-                message: RESULT.SUCCESS.message,
-            },
+        }).then( result => {
+
+            req.logout();
+
+            res.json({
+                api: req.originalUrl,
+                result: {
+                    boolean: RESULT.SUCCESS.boolean,
+                    code: RESULT.SUCCESS.code,
+                    message: RESULT.SUCCESS.message,
+                },
+            });
+
+        }).catch( err => {
+            next(err);
         });
 
     } catch(err){
