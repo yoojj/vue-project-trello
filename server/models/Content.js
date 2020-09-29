@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
         content: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: '',
         },
         description: {
             type: DataTypes.STRING,
@@ -20,18 +19,19 @@ module.exports = (sequelize, DataTypes) => {
         label: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: '',
+            defaultValue: 0,
         },
         order: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: '',
+            defaultValue: 0,
         },
         state: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
         },
+
     },{
         tableName: 'content',
         freezeTableName : false,
@@ -41,9 +41,9 @@ module.exports = (sequelize, DataTypes) => {
 
     Content.associate = (model) => {
         Content.belongsTo(model.User, { foreignKey: { name: 'uno', allowNull: false }, onDelete: 'CASCADE' });
-        Content.belongsTo(model.Card, { foreignKey: { name: 'bno', allowNull: false }, onDelete: 'CASCADE' });
-        Content.hasMany(model.File, { foreignKey: 'cno'});
-        Content.hasMany(model.Reply, { foreignKey: 'cno'});
+        Content.belongsTo(model.Card, { foreignKey: { name: 'cno', allowNull: false }, onDelete: 'CASCADE' });
+        Content.hasMany(model.File, { foreignKey: 'ccno'});
+        Content.hasMany(model.Reply, { foreignKey: 'ccno'});
     };
 
     return Content;
