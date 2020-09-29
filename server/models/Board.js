@@ -7,6 +7,12 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true,
         },
+        uuid: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            defaultValue: sequelize.UUIDV4,
+            unique: true,
+        },
         title: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -14,15 +20,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         bgcolor: {
             type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
+            allowNull: false,
+            autoIncrement: 0,
         },
         state: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
         },
-        
+
     },{
         tableName: 'board',
         freezeTableName : false,
