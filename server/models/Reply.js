@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true,
         },
-        content: {
+        recontent: {
             type: DataTypes.STRING,
             allowNull: false,
             defaultValue: '',
@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: true,
         },
+
     },{
         tableName: 'reply',
         freezeTableName : false,
@@ -25,8 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Reply.associate = (model) => {
-        Reply.belongsTo(model.User, { onDelete: 'CASCADE' });
-        Reply.belongsTo(model.Card, { onDelete: 'CASCADE' });
+        Reply.belongsTo(model.User, { foreignKey: { name: 'uno', allowNull: false }, onDelete: 'CASCADE' });
+        Reply.belongsTo(model.Content, { foreignKey: { name: 'ccno', allowNull: false }, onDelete: 'CASCADE' });
     };
 
     return Reply;
