@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
 
     const User = sequelize.define('user', {
 
-        cno: {
+        uno: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
@@ -10,13 +10,10 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING,
             unique: true,
-            allowNull: false,
         },
         id: {
             type: DataTypes.STRING,
             unique: true,
-            allowNull: false,
-            defaultValue: '',
         },
         password: {
             type: DataTypes.STRING,
@@ -32,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: '',
         },
+
     },{
         tableName: 'user',
         freezeTableName : false,
@@ -40,7 +38,9 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = (model) => {
-        User.hasMany(model.Card, { foreignKey: 'uno' });
+        User.hasMany(model.Board, { foreignKey: 'uno', sourceKey: 'uno' });
+        User.hasMany(model.Card, { foreignKey: 'uno', sourceKey: 'uno' });
+        User.hasMany(model.Content, { foreignKey: 'uno', sourceKey: 'uno' });
         User.hasMany(model.File, { foreignKey: 'uno' });
         User.hasMany(model.Reply, { foreignKey: 'uno' });
     };
