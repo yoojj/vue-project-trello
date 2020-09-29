@@ -57,7 +57,9 @@ export default {
         },
 
         btnRegCardListTitle(){
-            this.$emit('card-list-reg', this.card.title);
+            const title = this.card.title;
+            this.btnCloseAddCardListForm();
+            this.$emit('card-list-reg', title);
         },
 
     },
