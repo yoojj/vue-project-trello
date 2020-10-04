@@ -1,41 +1,49 @@
 import cookie from '@/_utils/cookie'
 
-const $bnoList = cookie.get('trello-bno-list') || null;
+const $uuidList = cookie.get('trello-uuid-list') || null;
 
 export default {
 
     state: {
         boardList: null,
-        bnoList: $bnoList ? $bnoList : null,
+        uuidList: $uuidList ? $uuidList : null,
     },
 
+
     getters: {
+
         boardList: (state) => {
             return state.boardList;
         },
-        bnoList: (state) => {
-            return state.bnoList;
+
+        uuidList: (state) => {
+            return state.uuidList;
         },
+
     },
 
 
     mutations: {
-        setBoardList: (state, data) => {
 
-            const bnoArr = data.map( (board) => {
-                return board.bno;
+        setBoardList: async(state, data) => {
+
+            await cookie.delete('trello-uuid-list');
+
+            const uuidArr = data.map( (board) => {
+                return board.uuid;
             });
 
-            cookie.set('trello-bno-list', bnoArr, 1);
+            await cookie.set('trello-uuid-list', uuidArr, 1);
 
             state.boardList = data;
-            state.bnoList = cookie.get('trello-bno-list');
+            state.uuidList = cookie.get('trello-uuid-list');
 
         },
 
         deleteBoardList: () => {
-            cookie.delete('trello-bno-list');
+            cookie.delete('trello-uuid-list');
         },
+
     },
 
 
@@ -45,15 +53,49 @@ export default {
         return axios.post('/board/list')
             .then( response => {
                 commit('setBoardList', response.data.boards);
-                return response.data.boards;
+                return response.data;
+
             }).catch( err => {
                 console.log(err);
                 return Promise.reject(err.result.message);
             });
         },
 
-        BOARD_WRITE: (dispatch, data) => {
+        BOARD_WRITE: ({dispatch}, data) => {
         return axios.post('/board/write', data)
+            .then( response => {
+                return response.data;
+
+            }).catch( err => {
+                console.log(err);
+                return Promise.reject(err.result.message);
+            });
+        },
+
+        BOARD_VIEW: ({dispatch}, data) => {
+        return axios.post('/board/view', data)
+            .then( response => {
+                return response.data;
+
+            }).catch( err => {
+                console.log(err);
+                return Promise.reject(err.result.message);
+            });
+        },
+
+        BOARD_MODIFY: ({dispatch}, data) => {
+        return axios.post('/board/modify', data)
+            .then( response => {
+                return response.data;
+
+            }).catch( err => {
+                console.log(err);
+                return Promise.reject(err.result.message);
+            });
+        },
+
+        BOARD_CLOSE: ({dispatch}, data) => {
+        return axios.post('/board/close', data)
             .then( response => {
                 return response.data;
 
