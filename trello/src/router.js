@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
 import store from '@/_vuex/store'
 import PATH from '@/_constant/path'
 
@@ -8,8 +7,9 @@ Vue.use(VueRouter);
 
 let userId;
 
-if(store.getters.token)
-    userId = store.getters.user.id || store.getters.user.cno;
+if(store.getters.token){
+    userId = store.getters.user.id || store.getters.user.uno;
+}
 
 const isUserLogin = (bool) => (to, from, next) => {
 
@@ -59,7 +59,8 @@ export default new VueRouter({
             component: PATH.LOGIN,
             beforeEnter: isUserLogin(false),
         },{
-            path: '/logout',
+            path: `/${userId}/logout`,
+            alias: '/logout',
             name: PATH.LOGOUT.name,
             component: PATH.LOGOUT,
             beforeRouteUpdate: isUserLogin(false),
@@ -71,35 +72,34 @@ export default new VueRouter({
             //children: []
         },{
             path: `/${userId}/profile`,
-            alias: '/profile',
             name: PATH.USER_PROFILE.name,
             component: PATH.USER_PROFILE,
             beforeEnter: isUserLogin(true),
         },{
             path: `/${userId}/board-list`,
-            alias: '/board-list',
             name: PATH.BOARD_LIST.name,
             component: PATH.BOARD_LIST,
             beforeEnter: isUserLogin(true),
         },{
-            path: `/${userId}/card-list/:bno`,
-            alias: '/card-list/:bno',
+            path: `/${userId}/card-list/:uuid`,
             name: PATH.CARD_LIST.name,
             component: PATH.CARD_LIST,
             beforeEnter: isUserLogin(true),
             beforeEnter: (to, from, next) => {
-                // 임시
-                if(to.params.bno > 10){
-                    next({path: '/404'});
-                } else {
+
+                if(store.getters.uuidList.includes(to.params.uuid)){
                     next();
+                } else {
+                    next({path: '/404'});
                 }
+
             },
         },{
-            path: '/search',
+            path: `/${userId}/search`,
+            alias: '/search',
             name: PATH.SEARCH.name,
             component: PATH.SEARCH,
-            //beforeEnter: isUserLogin(true),
         },
     ]
+
 });
