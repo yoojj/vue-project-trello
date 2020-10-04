@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Board.associate = (model) => {
-        Board.hasMany(model.Card, { foreignKey: { name: 'bno', allowNull: false }, onDelete: 'CASCADE' });
+        Board.hasMany(model.Card, { foreignKey: { as: 'Board', name: 'bno', allowNull: false }, onDelete: 'CASCADE' });
     };
 
     return Board;
