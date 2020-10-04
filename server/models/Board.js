@@ -8,10 +8,9 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
         },
         uuid: {
-            type: DataTypes.UUID,
-            allowNull: false,
-            defaultValue: sequelize.UUIDV4,
+            type: DataTypes.STRING,
             unique: true,
+            allowNull: false,
         },
         title: {
             type: DataTypes.STRING,
@@ -22,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             autoIncrement: 0,
+        },
+        bookmark: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
         },
         state: {
             type: DataTypes.BOOLEAN,
