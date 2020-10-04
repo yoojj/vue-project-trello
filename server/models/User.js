@@ -7,6 +7,11 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true,
         },
+        uuid: {
+            type: DataTypes.STRING,
+            unique: true,
+            allowNull: false,
+        },        
         email: {
             type: DataTypes.STRING,
             unique: true,
@@ -18,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         password: {
             type: DataTypes.STRING,
             allowNull: false,
+            defaultValue: '',
         },
         name: {
             type: DataTypes.STRING,
