@@ -3,6 +3,7 @@ const VALID = require('../constant/valid');
 
 const router = require('express').Router();
 const { body, validationResult } = require('express-validator');
+const UUID = require('uuid');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
@@ -58,6 +59,7 @@ router.post('/mail', body('email').isEmail(), async(req, res, next) => {
                 const createdTime = koreaDate.format(user.createdAt.slice(11)).split(':');
                 const nowTime = koreaDate.format('HH:mm:ss').toString().split(':');
                 const timeCheck = [];
+
                 nowTime.forEach( (val, i) => {
                     val = nowTime[i] - createdTime[i];
                     timeCheck.push(val);
@@ -143,6 +145,7 @@ router.post('/code', async(req, res, next) => {
         const keyTime = koreaDate.format(key).split(':');
         const nowTime = koreaDate.format('HH:mm:ss').toString().split(':');
         const timeCheck = [];
+
         nowTime.forEach( (val, i) => {
             val = nowTime[i] - keyTime[i];
             timeCheck.push(val);
@@ -153,8 +156,12 @@ router.post('/code', async(req, res, next) => {
         if(Math.abs(timeResult) > 61)
             return next('인증 시간이 지났습니다.');
 
+        const uuidv4 = UUID.v4().split('-');
+        const uuid = 'user' + uuidv4[3] + uuidv4[2];
+
         await User.findOrCreate({
-            where: { email }
+            where: { email },
+            defaults: { uuid },
 
         }).then( user => {
 
@@ -192,7 +199,7 @@ router.post('/join', valid, async(req, res, next) => {
         req.body.password = bcrypt.hashSync(req.body.password);
 
         await User.update({
-            id: req.body.id || '',
+            id: req.body.id,
             password: req.body.password,
             name: req.body.name || '',
 
@@ -280,7 +287,7 @@ router.post('/refresh-token', token.verify, (req, res, next) => {
 
     try {
 
-        const user = {...req.user.dataValues};
+        const user = req.user;
 
         const token = jwt.sign( user, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h',
@@ -309,7 +316,7 @@ router.post('/logout', token.verify, async(req, res, next) => {
 
         await User.update({
             loginedAt: '',
-            
+
         }, {
             where: { uno: req.user.uno }
 
