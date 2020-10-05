@@ -6,6 +6,9 @@ import pattern from '@/_constant/pattern'
 
 import user from './modules/user/'
 import board from './modules/board/'
+import card from './modules/card/'
+import content from './modules/content/'
+import search from './modules/search/'
 
 Vue.use(Vuex);
 
@@ -14,6 +17,9 @@ export default new Vuex.Store({
     modules: {
         user,
         board,
+        card,
+        content,
+        search,
     },
 
     state: {
