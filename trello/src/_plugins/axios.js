@@ -4,7 +4,7 @@ import store from '@/_vuex/store'
 
 const _axios = axios.create({
     baseURL: process.env.VUE_APP_API_URL,
-    timeout: 60 * 1000,
+    timeout: 5000,
     withCredentials: true,
 });
 
@@ -39,7 +39,14 @@ _axios.interceptors.response.use(
     },
 
     function(err) {
-        return Promise.reject(err.response.data);
+
+        if(err.response.data.result.message == 'jwt expired') {
+            location.href = '/logout';
+
+        } else {
+            return Promise.reject(err.response.data);
+        }
+
     },
 
 );
