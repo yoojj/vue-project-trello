@@ -1,43 +1,43 @@
 <template>
 <layout-user>
-    <section class="board-list-wrap">
-        <h1 class="">보드 리스트</h1>
+<section class="board-list-wrap">
+    <h1 class="">보드 리스트</h1>
 
-        <section class="create-board-wrap">
-            <h2>Create Board</h2>
-            <v-btn-modal button-name="Create new board" button-css="vbtn-create-board"
-                modal-css="vmodal-create-board">
-                <template slot="title">보드 생성</template>
-                <template slot="content">
-                    <form class="create-board-form" @submit.prevent="createBoardForm">
-                    <fieldset>
-                        <legend class="hide">보드 생성</legend>
+    <section class="create-board-wrap">
+        <h2>Create Board</h2>
+        <v-btn-modal button-name="Create new board" button-css="vbtn-create-board"
+            modal-css="vmodal-create-board">
+            <template slot="title">보드 생성</template>
+            <template slot="content">
+                <form class="create-board-form" @submit.prevent="createBoardForm">
+                <fieldset>
+                    <legend class="hide">보드 생성</legend>
 
-                        <label for="boardTitle" class="hide">보드 제목 입력</label>
-                        <input type="text" id="boardTitle" v-model="board.title">
+                    <label for="boardTitle" class="hide">보드 제목 입력</label>
+                    <input type="text" id="boardTitle" v-model="board.title">
 
-                        <input type="submit" class="btn-create-board-disabled" value="Create Board"
-                          :class="{ 'btn-create-board-submit' : isBoardTitle }"
-                          :disabled="!isBoardTitle">
+                    <input type="submit" class="btn-create-board-disabled" value="Create Board"
+                      :class="{ 'btn-create-board-submit' : isBoardTitle }"
+                      :disabled="!isBoardTitle">
 
-                    </fieldset>
-                    </form>
-                </template>
-            </v-btn-modal>
-        </section>
-
-        <section class="board-view-wrap">
-            <h2>Board View</h2>
-            <ul class="board-list">
-                <li v-for="board in boardList">
-                    <router-link :to="{ name: 'CARD_LIST', params: { bno: board.bno } }">
-                        {{ board.title }}
-                    </router-link>
-                </li>
-            </ul>
-        </section>
-
+                </fieldset>
+                </form>
+            </template>
+        </v-btn-modal>
     </section>
+
+    <section class="board-view-wrap">
+        <h2>Board View</h2>
+        <ul class="board-list">
+            <li v-for="board in boardList">
+                <router-link :to="{ name: 'CARD_LIST', params: { uuid: board.uuid } }">
+                    {{ board.title }}
+                </router-link>
+            </li>
+        </ul>
+    </section>
+
+</section>
 </layout-user>
 </template>
 
@@ -59,8 +59,8 @@ export default {
     data() {
         return {
             board: {
-                bno: '',
                 title: '',
+                bgcolor: '',
             },
 
             boardList: null,
@@ -69,15 +69,16 @@ export default {
 
     beforeCreate() {
         if(this.$store.getters.boardList == null) {
-            this.$store.dispatch('BOARD_LIST'
-            ).then( (data) => {
-                this.boardList = data;
+            this.$store.dispatch('BOARD_LIST').then( (data) => {
+                this.boardList = data.boards;
             });
         }
     },
 
     created() {
-        this.boardList = this.$store.getters.boardList;
+        if(this.$store.getters.boardList != null){
+            this.boardList = this.$store.getters.boardList;
+        }
     },
 
     computed: {
@@ -95,7 +96,7 @@ export default {
             }).then( (data) => {
 
                 this.$store.dispatch('BOARD_LIST').then( () => {
-                    this.$router.push({ name: 'CARD_LIST', params: { bno: data.board.bno }});
+                    this.$router.push({ name: 'CARD_LIST', params: { uuid: data.board.uuid }});
                 });
 
             }).catch( err => {
@@ -147,7 +148,8 @@ export default {
 .board-list {overflow:hidden;}
 .board-list > li {width:22%;max-width:175px;margin-right:10px;margin-bottom:10px;text-align:center;
     border-radius:3px;background:#e5e5e5;float:left;}
+.board-list > li:hover {background-color:rgba(0, 0, 0, 0.2);}
+
 .board-list > li a {display:inline-block;width:100%;padding:25px;box-sizing:border-box;
     text-overflow:ellipsis;overflow:hidden;}
-.board-list > li a:hover {background-color:rgba(0, 0, 0, 0.1);}
 </style>
