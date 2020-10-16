@@ -6,10 +6,14 @@ export default Object.freeze({
     SIGN_UP   : () => import('@/views/member/Signup.vue'),
     LOGIN     : () => import('@/views/member/Login.vue'),
     LOGOUT    : () => import('@/views/member/Logout.vue'),
+    
+    SEARCH      : () => import('@/views/user/Search.vue'),
 
-    USER_HOME : () => import('@/views/user/UserHome.vue'),
-    PROFILE   : () => import('@/views/user/Profile.vue'),
+    USER_HOME   : () => import('@/views/user/UserHome.vue'),
+    USER_PROFILE: () => import('@/views/user/UserProfile.vue'),
 
-    CARD_LIST : () => import('@/views/user/CardList.vue'),
+
+    BOARD_LIST  : () => import('@/views/user/BoardList.vue'),
+    CARD_LIST   : () => import('@/views/user/CardList.vue'),
 
 })
