@@ -1,12 +1,15 @@
 import cookie from '@/_utils/cookie'
 
-const $uuidList = cookie.get('trello-uuid-list') || null;
+
+
+const $uuidList = cookie.get('trello-board-uuid-list') || null;
 
 export default {
 
+
     state: {
         boardList: null,
-        uuidList: $uuidList ? $uuidList : null,
+        boardUuidList: $uuidList ? $uuidList : null,
     },
 
 
@@ -16,8 +19,8 @@ export default {
             return state.boardList;
         },
 
-        uuidList: (state) => {
-            return state.uuidList;
+        boardUuidList: (state) => {
+            return state.boardUuidList;
         },
 
     },
@@ -27,39 +30,27 @@ export default {
 
         setBoardList: async(state, data) => {
 
-            await cookie.delete('trello-uuid-list');
+            await cookie.delete('trello-board-uuid-list');
 
             const uuidArr = data.map( (board) => {
                 return board.uuid;
             });
 
-            await cookie.set('trello-uuid-list', uuidArr, 1);
+            await cookie.set('trello-board-uuid-list', uuidArr, 1);
 
             state.boardList = data;
-            state.uuidList = cookie.get('trello-uuid-list');
+            state.boardUuidList = cookie.get('trello-board-uuid-list');
 
         },
 
         deleteBoardList: () => {
-            cookie.delete('trello-uuid-list');
+            cookie.delete('trello-board-uuid-list');
         },
 
     },
 
 
     actions: {
-
-        BOARD_LIST: ({commit}) => {
-        return axios.post('/board/list')
-            .then( response => {
-                commit('setBoardList', response.data.boards);
-                return response.data;
-
-            }).catch( err => {
-                console.log(err);
-                return Promise.reject(err.result.message);
-            });
-        },
 
         BOARD_WRITE: ({dispatch}, data) => {
         return axios.post('/board/write', data)
@@ -72,6 +63,18 @@ export default {
             });
         },
 
+        BOARD_LIST: ({commit}) => {
+        return axios.post('/board/list')
+            .then( response => {
+                commit('setBoardList', response.data.boards);
+                return response.data;
+
+            }).catch( err => {
+                console.log(err);
+                return Promise.reject(err.result.message);
+            });
+        },
+        
         BOARD_VIEW: ({dispatch}, data) => {
         return axios.post('/board/view', data)
             .then( response => {
