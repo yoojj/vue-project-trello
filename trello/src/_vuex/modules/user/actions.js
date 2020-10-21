@@ -58,8 +58,15 @@ export default {
     },
 
     LOGOUT: ({commit}) => {
-        commit('logout');
-        return true;
+    return axios.post('/auth/logout')
+        .then( response => {
+            commit('logout');
+            return response.data;
+
+        }).catch( err => {
+            console.log(err);
+            return Promise.reject(err.result.message);
+        });
     },
 
 }
