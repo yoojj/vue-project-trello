@@ -1,25 +1,17 @@
 # Vue Trello
 
 ```bash
-$ yarn install @vue/cli
-
 $ vue create trello
 
-$ vue add vuex
-$ vue add router
-$ vue add axios
-$ vue add i18n
+$ npm install
 
-$ yarn install
-
-$ yarn run serve
-$ yarn run build
+$ npm run serve
 ```
 
 
 **구조**  
 
-```
+```bash 
 src/
 ├── _constant/       # 상수
 ├── _plugins/        # 전역 메소드
