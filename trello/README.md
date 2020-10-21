@@ -2,6 +2,7 @@
 
 ```bash
 $ vue create trello
+$ vue add vuex router axios i18n
 
 $ npm install
 
@@ -11,7 +12,7 @@ $ npm run serve
 
 **구조**  
 
-```bash 
+```bash
 src/
 ├── _constant/       # 상수
 ├── _plugins/        # 전역 메소드
