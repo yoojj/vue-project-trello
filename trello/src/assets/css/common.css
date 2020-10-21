@@ -1,0 +1,2 @@
+.none {display:none;}
+.hide {position:fixed;top:0;left:-1px;width:1px;height:1px;font-size:1px;line-height:1px;overflow:hidden;}
