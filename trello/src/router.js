@@ -8,17 +8,17 @@ Vue.use(VueRouter);
 let userId;
 
 if(store.getters.token){
-    userId = store.getters.user.id || store.getters.user.uno;
+    userId = store.getters.user.id || store.getters.user.uuid;
 }
 
 const isUserLogin = (bool) => (to, from, next) => {
 
-    if(bool==false){
+    if(bool == false){
         !store.getters.token
           ? next()
           : next({path: `/${userId}` })
 
-    } else if(bool==true){
+    } else if(bool == true){
         store.getters.token
           ? next()
           : next({path: 'login'})
@@ -72,6 +72,7 @@ export default new VueRouter({
             //children: []
         },{
             path: `/${userId}/profile`,
+            alias: '/profile',
             name: PATH.USER_PROFILE.name,
             component: PATH.USER_PROFILE,
             beforeEnter: isUserLogin(true),
@@ -87,7 +88,7 @@ export default new VueRouter({
             beforeEnter: isUserLogin(true),
             beforeEnter: (to, from, next) => {
 
-                if(store.getters.uuidList.includes(to.params.uuid)){
+                if(store.getters.boardUuidList.includes(to.params.uuid)){
                     next();
                 } else {
                     next({path: '/404'});
@@ -99,6 +100,7 @@ export default new VueRouter({
             alias: '/search',
             name: PATH.SEARCH.name,
             component: PATH.SEARCH,
+            beforeEnter: isUserLogin(true),
         },
     ]
 
