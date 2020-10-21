@@ -1,11 +1,12 @@
 <template>
-<span class="btn-modal-wrap">
+<span class="vbtn-modal-wrap">
+
     <button type="button" :class="buttonCss" @click="showModal">{{ buttonName }}</button>
 
     <v-modal :class="modalCss" v-if="isModalVisible" @close-modal="isModalVisible=false">
 
         <template slot="modal-title">
-            <slot name="title"/>
+            <slot name="title" />
         </template>
 
         <template slot="modal-content">
@@ -13,6 +14,7 @@
         </template>
 
     </v-modal>
+    
 </span>
 </template>
 
@@ -30,9 +32,9 @@ export default {
     },
 
     props: [
-        'buttonCss',
-        'buttonName',
-        'modalCss',
+        'button-css',
+        'button-name',
+        'modal-css',
     ],
 
     data() {
@@ -52,6 +54,6 @@ export default {
 
 
 
-<style scoped>
-.btn-modal-wrap {position:relative;display:inline-block;}
+<style>
+.vbtn-modal-wrap {position:relative;display:inline-block;width:inherit;}
 </style>
