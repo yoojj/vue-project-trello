@@ -19,7 +19,6 @@
     </form>
     </transition>
 
-
 </section>
 </template>
 
@@ -30,6 +29,8 @@ export default {
 
     name: 'AddCardBtn',
 
+    props: [ 'propscno' ],
+
     data() {
         return {
 
@@ -37,10 +38,16 @@ export default {
             isAddCardContentForm: false,
 
             card: {
+                cno: '',
                 content: '',
             },
 
         }
+    },
+
+
+    created(){
+        this.card.cno = this.propscno;
     },
 
 
@@ -58,9 +65,9 @@ export default {
         },
 
         btnRegCardContent(){
-            const contet = this.card.content;
+            const card = {...this.card};
             this.btnCloseAddCardContentForm();
-            this.$emit('card-content-reg', content);
+            this.$emit('card-content-reg', card);
         },
 
     },
@@ -81,13 +88,9 @@ export default {
 
 
 .fade-enter-active,
-.fade-leave-active {
-    transition:opacity .3s;
-}
+.fade-leave-active {transition:opacity .3s;}
 .fade-enter,
-.fade-leave-to {
-    opacity:0;
-}
+.fade-leave-to {opacity:0;}
 
 
 /* 카드 등록 폼 */
