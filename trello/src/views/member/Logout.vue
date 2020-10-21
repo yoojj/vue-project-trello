@@ -25,21 +25,23 @@ export default {
 
     created() {
 
-        this.$store.dispatch('LOGOUT'
-        ).then( data => {
+        if(this.$user){
+            this.$store.dispatch('LOGOUT'
+            ).then( data => {
 
-            this.$store.commit('deleteBoardList');
+                this.$store.commit('deleteBoardList');
 
-            if(self.name != 'reload') {
-                self.name = 'reload';
-                self.location.reload(true);
-            } else {
-                self.name = '';
-            }
+                if(self.name != 'reload') {
+                    self.name = 'reload';
+                    self.location.reload(true);
+                } else {
+                    self.name = '';
+                }
 
-        }).catch( err => {
-            alert(err);
-        });
+            }).catch( err => {
+                alert(err);
+            });
+        }
 
     },
 
