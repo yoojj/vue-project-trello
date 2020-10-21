@@ -1,18 +1,18 @@
 import LayoutDefault from './LayoutDefault'
 import LayoutContent from './LayoutContent'
-import LayoutUserHome from './LayoutUserHome'
+import LayoutUser from './LayoutUser'
 import LayoutCard from './LayoutCard'
 
 export {
     LayoutDefault,
     LayoutContent,
-    LayoutUserHome,
+    LayoutUser,
     LayoutCard,
 };
 
 /*
 LayoutDefault
     - LayoutContent
-        - LayoutUserHome
+        - LayoutUser
     - LayoutCard
 */
