@@ -1,6 +1,6 @@
 <template>
 <layout-content>
-<section class="logout-wrap">
+<section class="logout-wrap" v-if="!isUserLogin">
     <h1>Logout</h1>
 
     <p>Thanks for using Trello</p>
@@ -22,29 +22,29 @@ export default {
         LayoutContent,
     },
 
+    computed: {
+        isUserLogin(){
+            return this.$user;
+        },
+    },
 
     created() {
 
         if(this.$user){
+
             this.$store.dispatch('LOGOUT'
             ).then( data => {
 
                 this.$store.commit('deleteBoardList');
-
-                if(self.name != 'reload') {
-                    self.name = 'reload';
-                    self.location.reload(true);
-                } else {
-                    self.name = '';
-                }
+                document.location.reload(true);
 
             }).catch( err => {
                 alert(err);
             });
+
         }
 
     },
-
 
 }
 </script>
