@@ -2,10 +2,13 @@ import cookie from '@/_utils/cookie'
 
 export default {
 
-    setUserInfo: (state, data) => {
+    setUserInfo: async(state, data) => {
 
-        cookie.set('trello-user-info', JSON.stringify(data.user), 1);
-        cookie.set('trello-user-token', data.token, 1);
+        await cookie.delete('trello-user-info');
+        await cookie.delete('trello-user-token');
+
+        await cookie.set('trello-user-info', JSON.stringify(data.user), 1);
+        await cookie.set('trello-user-token', data.token, 1);
 
         const user = cookie.get('trello-user-info');
         const token = cookie.get('trello-user-token');
