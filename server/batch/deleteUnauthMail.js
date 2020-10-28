@@ -4,7 +4,7 @@ const { sequelize, User } = require('../models');
 
 
 
-const job = schedule.scheduleJob('* * 1 * * *', async() => {
+const job = schedule.scheduleJob({ hour:1 }, async() => {
 
     logger.info('********** start scheduleJob **********');
 
