@@ -4,7 +4,9 @@ const VALID = require('../constant/valid');
 const router = require('express').Router();
 const { body, validationResult } = require('express-validator');
 
-const { sequelize, Card } = require('../models');
+const file = require('../plugin/file');
+
+const { sequelize, Board, Card } = require('../models');
 
 const valid = [
     body('title')
@@ -14,18 +16,21 @@ const valid = [
 
 
 
-router.post(['/', '/list'], async(req, res, next) => {
+router.post('/all-list', (req, res, next) => {
 
     try {
 
-        const cno = req.params.cno;
+        Card.findAll({
+            attributes: {
+                exclude: [ 'bno', 'uno' ],
+            },
 
-        await Card.findAll({
-            where: {
+            where: sequelize.and({
                 uno: req.user.uno,
-            }
+                state: true,
+            }),
 
-        }).then( list => {
+        }).then( cards => {
 
             res.json({
                 api: req.originalUrl,
@@ -34,11 +39,71 @@ router.post(['/', '/list'], async(req, res, next) => {
                     code: RESULT.SUCCESS.code,
                     message: RESULT.SUCCESS.message,
                 },
-                cardList: list,
+                cards,
             });
 
         }).catch( err => {
             next(err);
+        });
+
+    } catch(err){
+        next(err);
+    }
+
+});
+
+router.post(['/', '/list'], (req, res, next) => {
+
+    try {
+
+        sequelize.transaction( transaction => {
+
+            Board.findOne({
+                where: sequelize.and({
+                    uno: req.user.uno,
+                    uuid: req.body.uuid,
+                    state: true,
+                }),
+
+            },{
+                transaction,
+
+            }).then( board => {
+
+                Card.findAll({
+                    attributes: {
+                        exclude: [ 'bno', 'uno' ],
+                    },
+
+                    where: sequelize.and({
+                        bno: board.bno,
+                        uno: req.user.uno,
+                        state: true,
+                    }),
+
+                },{
+                    transaction,
+
+                }).then( cards => {
+
+                    res.json({
+                        api: req.originalUrl,
+                        result: {
+                            boolean: RESULT.SUCCESS.boolean,
+                            code: RESULT.SUCCESS.code,
+                            message: RESULT.SUCCESS.message,
+                        },
+                        cards,
+                    });
+
+                }).catch( err => {
+                    next(err);
+                });
+
+            }).catch( err => {
+                next(err);
+            });
+
         });
 
     } catch(err){
@@ -58,21 +123,38 @@ router.post('/write', valid, async(req, res, next) => {
             return next(new Error('유효성 오류'));
         }
 
-        const card = {...req.body};
-        card.uno = req.user.uno;
+        await Board.findOne({
+            where: { uuid: req.body.uuid },
 
-        await Card.create(
-            card
+        }).then( board => {
 
-        ).then( card => {
+            if(!board)
+                return next('해당하는 게시물이 없습니다.');
 
-            res.json({
-                api: req.originalUrl,
-                result: {
-                    boolean: RESULT.SUCCESS.boolean,
-                    code: RESULT.SUCCESS.code,
-                    message: RESULT.SUCCESS.message,
-                },
+            Card.create({
+                bno: board.bno,
+                uno: req.user.uno,
+                title: req.body.title,
+
+            }).then( card => {
+
+                const $card = card.dataValues;
+
+                delete $card.bno;
+                delete $card.uno;
+
+                res.json({
+                    api: req.originalUrl,
+                    result: {
+                        boolean: RESULT.SUCCESS.boolean,
+                        code: RESULT.SUCCESS.code,
+                        message: RESULT.SUCCESS.message,
+                    },
+                    card: $card,
+                });
+
+            }).catch( err => {
+                next(err);
             });
 
         }).catch( err => {
@@ -85,14 +167,9 @@ router.post('/write', valid, async(req, res, next) => {
 
 });
 
-router.post(['/modify', '/modify:cno'], valid, async(req, res, next) => {
+router.post('/modify', valid, async(req, res, next) => {
 
     try {
-
-        const cno = req.body.cno || req.params.cno;
-
-        if(!cno)
-            return next(new Error('게시물 번호를 입력해주세요.'));
 
         const vaildError = validationResult(req);
 
@@ -103,7 +180,7 @@ router.post(['/modify', '/modify:cno'], valid, async(req, res, next) => {
 
         await Card.findOne({
             where: sequelize.and({
-                cno,
+                cno: req.body.cno,
                 uno: req.user.uno,
             }),
 
@@ -113,9 +190,13 @@ router.post(['/modify', '/modify:cno'], valid, async(req, res, next) => {
                 return next('해당하는 게시물이 없습니다.');
 
             Card.update( {
-                ...req.body
+                title: req.body.title,
+
             }, {
-                where : { cno }
+                where: sequelize.and({
+                    cno: req.body.cno,
+                    uno: req.user.uno,
+                }),
 
             }).then( result => {
 
@@ -132,6 +213,8 @@ router.post(['/modify', '/modify:cno'], valid, async(req, res, next) => {
                 next(err);
             });
 
+        }).catch( err => {
+            next(err);
         });
 
     } catch(err){
@@ -140,20 +223,15 @@ router.post(['/modify', '/modify:cno'], valid, async(req, res, next) => {
 
 });
 
-router.post(['/delete', '/delete/:cno'], async(req, res, next) => {
+router.post('/delete', async(req, res, next) => {
 
     try {
-
-        const cno = req.body.cno || req.params.cno;
-
-        if(!cno)
-            return next(new Error('게시물 번호를 입력해주세요.'));
 
         const t = await sequelize.transaction();
 
         await Card.findAll({
             where: sequelize.and({
-                cno,
+                cno: req.body.cno,
                 uno: req.user.uno,
             }),
         },{
@@ -161,11 +239,11 @@ router.post(['/delete', '/delete/:cno'], async(req, res, next) => {
 
         }).then( card => {
 
-            if(!card || Object.keys(card).length == 0)
+            if(!card)
                 return next('해당하는 게시물이 없습니다.');
 
-            return Card.destroy({
-                where : { cno }
+            Card.destroy({
+                where : { cno: req.body.cno }
             },{
                 transaction: t,
 
@@ -180,14 +258,17 @@ router.post(['/delete', '/delete/:cno'], async(req, res, next) => {
                     },
                 });
 
-                t.commit();
-
+            }).catch( err => {
+                t.rollback();
+                next(err);
             });
 
         }).catch( err => {
             t.rollback();
             next(err);
         });
+
+        await t.commit();
 
     } catch(err){
         next(err);
