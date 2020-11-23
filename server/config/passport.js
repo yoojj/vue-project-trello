@@ -4,8 +4,7 @@ const passportJWT = require('passport-jwt');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const bcrypt = require('bcryptjs');
-
-const { Member } = require('../models');
+const { sequelize, User } = require('../models');
 
 
 
@@ -18,8 +17,15 @@ passport.use(new LocalStrategy({
 
 }, async (req, email, password, done) => {
 
-    await Member.findOne({
-        where: { email },
+    if(req.body.email === 'null')
+        email = null;
+
+    await User.findOne({
+
+        where: sequelize.or(
+            { email },
+            { id: req.body.id ? req.body.id : null }
+        )
 
     }).then( user => {
 
@@ -43,25 +49,30 @@ passport.use(new JWTStrategy({
     secretOrKey: process.env.JWT_SECRET_KEY,
     passReqToCallback: true,
 
-}, async (req, jwtPayload, done) => {
+}, (req, jwtPayload, done) => {
 
-    const ignore = [
-        'logout',
-        'refresh-token',
+    /*
+    const url = req.originalUrl.split('/');
+
+    const userInfo = [
+        jwtPayload.id,
+        jwtPayload.uuid,
     ];
 
-    if(ignore.includes(req.path) && jwtPayload.email !== req.path.split('/')[1])
-        throw new Error('사용자 오류');
+    if(!userInfo.includes(url[0])){
+        return done(null, false, { message: '사용자 오류' });
+    }
+    */
 
-    await Member.findByPk(jwtPayload.email, {
-        attributes: { exclude: ['password'] },
+    const user = {
+        email: jwtPayload.email,
+        id: jwtPayload.id,
+        uuid: jwtPayload.uuid,
+        name: jwtPayload.name,
+        loginedAt: jwtPayload.loginedAt,
+    };
 
-    }).then( user => {
-        return done(null, user);
-
-    }).catch( err => {
-        return done(err, false);
-    });
+    return done(null, user);
 
 }));
 
