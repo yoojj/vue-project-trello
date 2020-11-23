@@ -29,19 +29,23 @@
         </nav>
 
         <nav class="common-header-nav-profile" v-if="isUserLogin">
-            <v-btn-modal button-name="알림" button-css="header-btn-round-square" modal-css="notice-modal">
+        <div class="nav-profile-layout">
+            <v-btn-modal button-name="알림" button-css="header-btn-round-square btn-notice-layout"
+            modal-css="notice-modal">
                 <template slot="title">알림</template>
                 <template slot="content">
                 </template>
             </v-btn-modal>
 
-            <v-btn-modal :button-name="userName" button-css="btn-user-name" modal-css="profile-modal">
+            <v-btn-modal :button-name="userName" button-css="btn-user-name-layout btn-user-name"
+            modal-css="profile-modal">
                 <template slot="title">프로필</template>
                 <template slot="content">
-                    <router-link :to="{ name: 'profile'}">profile</router-link>
+                    <router-link to="/profile">profile</router-link>
                     <button type="button" @click="btnUserLogout">로그아웃</button>
                 </template>
             </v-btn-modal>
+        </div>
         </nav>
 
     </header>
@@ -70,15 +74,16 @@ export default {
     },
 
     computed: {
-        // 임시
+
         isUserLogin(){
-            return  this.$user;
+            return this.$user;
         },
+
         userName(){
             return this.$user.name ? this.$user.name.charAt(0).toUpperCase() : 'U' ;
         },
-    },
 
+    },
 
     methods: {
 
@@ -86,17 +91,12 @@ export default {
             if(!this.searchWord) {
                 alert('검색어를 입력하세요.');
             } else {
-                this.$router.push('/search?word=' + this.searchWord);
+                this.$router.push('/search?word=' + this.searchWord).catch(() => {});
             }
         },
 
         btnUserLogout() {
-            this.$store.dispatch('LOGOUT'
-            ).then( data => {
-                location.href = '/logout';
-            }).catch( err => {
-                alert(err);
-            });
+            this.$router.push('/logout');
         },
 
     },
@@ -111,7 +111,7 @@ export default {
 .common-wrap-bg {background:#026aa7;}
 
 
-/***** 공통 버튼 *****/
+/***** 공통 버튼 디자인 *****/
 .header-btn-round-square {display:inline-block;padding:10px;color:#fff;font-weight:bold;font-size:14px;
     border-radius:2px;background-color:rgba(255, 255, 255, 0.3);}
 .header-btn-round-square:hover {background-color:rgba(255, 255, 255, 0.2);}
@@ -134,15 +134,18 @@ export default {
 .common-header-title a:hover {opacity:1;}
 
 
+
 /*** 왼쪽 메뉴 ***/
 .common-header-nav-search {grid-area:f;grid-column-start:1;grid-column-end:6;}
 .common-header-nav-search > a,
-.common-header-nav-search > span {margin-right:5px;}
+.common-header-nav-search > span {width:max-content;margin-right:5px;}
+
 
 /* 보드 리스트 모달 */
-.board-list-modal {top:50px;}
+.board-list-modal {top:50px;left:0;}
 
-/* 검색 */
+
+/** 검색 **/
 .search-card-wrap {position:relative;display:inline-block;width:50%;
     border-radius:2px;}
 
@@ -160,14 +163,23 @@ export default {
 .btnSearchCardActive:hover {background:#e5e5e5;}
 
 
+
 /*** 오른쪽 메뉴 ***/
-.common-header-nav-profile {grid-area:t;grid-column-start:14;grid-column-end:15;}
+.common-header-nav-profile {grid-area:t;grid-column-start:13;grid-column-end:15;}
+.nav-profile-layout {width:max-content;float:right;}
+.nav-profile-layout::after {content:"";display:block;cler:both;}
+
+
+/** 알림 버튼 **/
+.btn-notice-layout {}
 
 /* 알림 모달 */
 .notice-modal {top:50px;right:0;}
 
-/* 유저 버튼 */
-.btn-user-name {margin-left:5px;padding:11px 14px;font-weight:bold;border-radius:20px;}
+
+/** 유저 버튼 **/
+.btn-user-name-layout {}
+.btn-user-name {margin-left:5px;padding:11px 13px;font-weight:bold;border-radius:22px;}
 .btn-user-name:hover {background-color:rgba(255, 255, 255, 0.5);}
 
 /* 프로필 모달 */
