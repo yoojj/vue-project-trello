@@ -7,7 +7,6 @@ const UUID = require('uuid');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-require('../config/passport');
 const mt = require('moment-timezone');
 const koreaDate = mt().tz('Asia/Seoul');
 const crypto = require('../plugin/crypto');
@@ -255,7 +254,11 @@ router.post('/login', (req, res, next) => {
                 User.update({
                     loginedAt: sequelize.fn('NOW'),
                 }, {
-                    where: { email: user.email }
+                    where: sequelize.or(
+                        { email: user.email },
+                        { id: user.id },
+                    )
+
                 });
 
                 const token = jwt.sign({...user.dataValues}, process.env.JWT_SECRET_KEY, {
@@ -318,7 +321,10 @@ router.post('/logout', token.verify, async(req, res, next) => {
             loginedAt: '',
 
         }, {
-            where: { uno: req.user.uno }
+            where: sequelize.or(
+                { id: req.user.id },
+                { uuid: req.user.uuid }
+            )
 
         }).then( result => {
 
