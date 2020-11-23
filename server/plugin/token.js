@@ -16,15 +16,14 @@ exports.verify = (req, res, next) => {
 
         req.decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-        return passport.authenticate('jwt', { session: false }, (err, user, info) => {
-
+        return (passport.authenticate('jwt', (err, user, info) => {
             if(err || !user){
                 if(info)
                     return next(info.message);
                 return next(err);
             }
-
-        })(req, res, next);
+            return (passport.authenticate('jwt')(req, res, next));
+        })(req, res, next));
 
     } catch(err){
 
