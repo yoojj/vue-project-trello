@@ -8,11 +8,9 @@ $ npm install body-parser cookie-parser morgan winston dotenv \
 express express-session express-mysql-session express-validator \
 cors helmet multer bcrypt mysql2 sequelize bcryptjs nodemailer  \
 passport passport-local passport-http passport-jwt jsonwebtoken \
-node-schedule multer
+node-schedule multer uuid
 
 $ express server
-
-$ node app
 ```
 
 
@@ -36,29 +34,54 @@ $ node app
 
 ### Auth
 
-#### POST request : /auth/mail
-: 메일 인증
+`POST /auth/mail`   
+: 입력한 메일로 인증 코드 발송
 
 구분 | 속성 | 타입 | 필수
 ---|---|---|:---:
 body   | email | string | o
 
 
-#### GET request : /auth/mail?k=키&e=이메일
-: 메일 인증
+`POST /auth/code`  
+: 인증 코드에 문제가 없으면 해당 메일로 가입
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+body   | code | string | o
 
 
-#### POST request : /auth/join  
+`POST /auth/join `    
+: 인증된 메일로 나머지 정보 업데이트
 
 구분 | 속성 | 타입 | 필수
 ---|---|---|:---:
 body   | email    | string | o
 body   | password | string | o
-body   | id       | string | x
+body   | id       | string | o
 body   | name     | string | x
 
+```json
+{
+  "email": "email",
+  "password": "111"
+}
 
-#### POST request : /auth/login
+{
+  "email": "email",
+  "password": "111",
+  "name": ""
+}
+
+{
+  "id": "id",
+  "email": "email",
+  "password": "111",
+  "name": ""
+}
+````
+
+
+`POST /auth/login`   
 : 이메일이나 아이디로 로그인
 
 구분 | 속성 | 타입 | 필수
@@ -83,7 +106,7 @@ body   | password | string | o
 ```
 
 
-#### POST request : /auth/refresh-token
+`POST /auth/refresh-token`   
 : 로그아웃하지 않았다면 한 시간마다 토큰 재발급    
 
 구분 | 속성 | 타입 | 필수
@@ -91,7 +114,7 @@ body   | password | string | o
 header  | authorization | string | o
 
 
-#### POST request : /auth/logout
+`POST /auth/logout`   
 
 구분 | 속성 | 타입 | 필수
 ---|---|---|:---:
@@ -101,65 +124,157 @@ header  | authorization | string | o
 
 ### User
 
-#### POST request : /user/:[uno || id]
+`POST /profile`  
 
 구분 | 속성 | 타입 | 필수
 ---|---|---|:---:
 header  | authorization | string | o
+
+
+
+### Board
+
+`POST /board, /board/list`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+
+
+`POST /board/write`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+body    | title | string | o
+body    | bgcolor | number | x
+body    | bookmark | boolean | x
+
+
+`POST /board/view`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+body    | uuid | string | o
+
+
+` POST /board/modify`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+body    | uuid | string | o
+body    | title | string | o
+body    | bgcolor | number | x
+body    | bookmark | boolean | x
+body    | state | boolean | x
+
+
+`POST /board/close`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+body    | uuid | string | o
 
 
 
 ### Card
 
-#### POST request : /card/, /card/list
+`POST /card/all-list`
 
 구분 | 속성 | 타입 | 필수
 ---|---|---|:---:
 header  | authorization | string | o
 
 
-#### POST request : /card/write
+`POST /card, /card/list`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+body    | uuid | string | o
+
+
+`POST /card/write`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:|---
+header  | authorization | string | o
+body    | uuid | string | o
+body    | title | string | o
+body    | order | number | x
+body    | watch | number | x
+body    | state | boolen | x
+
+
+`POST /card/modify`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | accept | string | o
+header  | content-type | string | o
+body    | cno | number | o
+body    | title | string | o
+body    | order | number | x
+body    | watch | number | x
+body    | state | boolen | x
+
+
+`POST /card/delete`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+body    | cno | number, number[] | o
+
+
+
+### Card Content
+
+`POST /content/list`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+body    | cno | number, number[] | o
+
+
+`POST /content/write`
+
+구분 | 속성 | 타입 | 필수
+---|---|---|:---:
+header  | authorization | string | o
+body    | uuid | string | o
+body    | cno | number | o
+body    | content | string | o
+
+
+`POST /content/view`
 
 구분 | 속성 | 타입 | 필수 | 비고
 ---|---|---|:---:|---
-header  | accept | string | o | application/json
-header  | content-type | string | o | multipart/form-data
 header  | authorization | string | o |
-body    | title | string | o |
-body    | content | string | x |
+body    | uno | number | o |
 
 
-#### POST request : /card/view, /card/view/:cno
-
-구분 | 속성 | 타입 | 필수
----|---|---|:---:
-header  | authorization | string | o
-body    | cno | number | △
-
-
-#### POST request : /card/modify, /card/modify/:cno
+`POST /content/update`
 
 구분 | 속성 | 타입 | 필수 | 비고
 ---|---|---|:---:|---
 header  | accept | string | o | application/json
-header  | content-type | string | o | multipart/form-data
-body    | cno | number | △ |
-body    | title | string | o |
+header  | content-type | string | △ | multipart/form-data
+header  | authorization | string | o |
+body    | uno | number | o |
 body    | content | string | x |
-
-
-#### POST request : /card/delete, /card/delete/:cno
-
-구분 | 속성 | 타입 | 필수
----|---|---|:---:
-header  | authorization | string | o
-body    | cno | number, number[] | △
+body    | file | string | △ |
 
 
 
 ### File
 
-#### GET request : /download/:fno
+`POST /download/:fno`
 
 구분 | 속성 | 타입 | 필수
 ---|---|---|:---:
